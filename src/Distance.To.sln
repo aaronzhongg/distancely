@@ -1,7 +1,9 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Distance.To", "Distance.To\Distance.To.csproj", "{3E1AA830-AF61-49F7-8D04-B851D8456D58}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{3E1AA830-AF61-49F7-8D04-B851D8456D58}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{14E2ACEE-94F5-4A3E-97C7-6F1DFB3D5262}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,5 +15,9 @@ Global
 		{3E1AA830-AF61-49F7-8D04-B851D8456D58}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E1AA830-AF61-49F7-8D04-B851D8456D58}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E1AA830-AF61-49F7-8D04-B851D8456D58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14E2ACEE-94F5-4A3E-97C7-6F1DFB3D5262}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14E2ACEE-94F5-4A3E-97C7-6F1DFB3D5262}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14E2ACEE-94F5-4A3E-97C7-6F1DFB3D5262}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14E2ACEE-94F5-4A3E-97C7-6F1DFB3D5262}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
