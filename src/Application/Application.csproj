@@ -5,7 +5,10 @@
     <OutputType>Library</OutputType>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Distance.To.Application' " />
   <ItemGroup>
     <Folder Include="UseCases\" />
+    <Folder Include="UseCases\CalculateTravelTimes\" />
+    <Folder Include="Services\" />
   </ItemGroup>
 </Project>

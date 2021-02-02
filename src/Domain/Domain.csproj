@@ -5,7 +5,7 @@
     <OutputType>Library</OutputType>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Distance.To' " />
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Distance.To.Domain' " />
   <ItemGroup>
     <Folder Include="Models\" />
   </ItemGroup>
