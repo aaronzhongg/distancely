@@ -8,7 +8,13 @@
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Distance.To.Application' " />
   <ItemGroup>
     <Folder Include="UseCases\" />
-    <Folder Include="UseCases\CalculateTravelTimes\" />
+    <Folder Include="UseCases\CalculateDistanceTo\" />
     <Folder Include="Services\" />
+    <Folder Include="Modules\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
   </ItemGroup>
 </Project>

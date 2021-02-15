@@ -18,7 +18,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task GetAsync([FromServices] ICalculateTravelTimesUseCase useCase)
+        public async Task GetAsync([FromServices] ICalculateDistanceToUseCase useCase)
         {
             await useCase.TestAsync();
         }

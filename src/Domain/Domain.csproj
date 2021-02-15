@@ -6,7 +6,4 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Distance.To.Domain' " />
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
 </Project>

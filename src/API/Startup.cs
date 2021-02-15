@@ -37,7 +37,7 @@ namespace API
             });
 
             // todo: clean up by splitting into separate extension classes
-            services.AddScoped<ICalculateTravelTimesUseCase, CalculateTravelTimesUseCase>();
+            services.AddScoped<ICalculateDistanceToUseCase, CalculateTravelTimesUseCase>();
             services.AddScoped<IDistanceCalculator, GoogleDistanceService>();
         }
 
