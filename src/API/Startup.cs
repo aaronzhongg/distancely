@@ -1,18 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Application.Services;
-using Application.UseCases.CalculateTravelTimes;
+using Application.UseCases.CalculateDistanceTo;
 using Infrastructure.DistanceCalculator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace API
@@ -31,13 +24,14 @@ namespace API
         {
 
             services.AddControllers();
+            services.AddHttpClient();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
             });
 
             // todo: clean up by splitting into separate extension classes
-            services.AddScoped<ICalculateDistanceToUseCase, CalculateTravelTimesUseCase>();
+            services.AddScoped<ICalculateDistanceToUseCase, CalculateDistanceToUseCase>();
             services.AddScoped<IDistanceCalculator, GoogleDistanceService>();
         }
 
