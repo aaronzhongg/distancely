@@ -1,6 +1,8 @@
+using System;
 using Application.Services;
 using Application.UseCases.CalculateDistanceTo;
 using Infrastructure.DistanceCalculator;
+using Infrastructure.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -12,9 +14,15 @@ namespace API
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IWebHostEnvironment env)
         {
-            Configuration = configuration;
+            Configuration = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddEnvironmentVariables()
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json")
+                .AddJsonFile("appsettings.Google.json")
+                .Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -33,6 +41,8 @@ namespace API
             // todo: clean up by splitting into separate extension classes
             services.AddScoped<ICalculateDistanceToUseCase, CalculateDistanceToUseCase>();
             services.AddScoped<IDistanceCalculator, GoogleDistanceService>();
+
+            services.Configure<GoogleOptions>(Configuration.GetSection(key: nameof(GoogleOptions)));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

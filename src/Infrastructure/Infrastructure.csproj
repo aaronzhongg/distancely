@@ -8,6 +8,7 @@
   <ItemGroup>
     <Folder Include="DistanceCalculator\" />
     <Folder Include="Modules\" />
+    <Folder Include="Options\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj">
