@@ -1,6 +1,18 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import logo from "./logo.svg";
+import "./App.css";
+import axios from "axios";
+
+axios
+  .get(
+    "https://localhost:2442/DistanceCalculator?fromAddress=96%20holly%20street%2C%20avondale&toAddress=1%20Nelson%20Street%2C%20Auckland"
+  )
+  .then((response) => {
+    console.log(response);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 function App() {
   return (
