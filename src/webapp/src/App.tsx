@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import logo from "./logo.svg";
 import "./App.css";
@@ -27,7 +27,16 @@ const DirectionsFormWrapper = styled.div`
 
 const Button = styled.button``;
 
+const GetDistanceTo = () => {
+  console.log("GetDistanceTo");
+};
+
 function App() {
+  const [fromAddress, setFromAddress] = useState("");
+  const [toAddress, setToAddress] = useState("");
+
+  React.useEffect(() => console.log(fromAddress), [fromAddress]);
+
   return (
     // <div className="App">
     //   <header className="App-header">
@@ -47,9 +56,13 @@ function App() {
     // </div>
     <AppWrapper>
       <DirectionsFormWrapper>
+        <TextField
+          onChangeHandler={(event) => {
+            setFromAddress(event.target.value);
+          }}
+        />
         <TextField />
-        <TextField />
-        <Button> Find Distance To </Button>
+        <Button onClick={GetDistanceTo}> Get Distance To </Button>
       </DirectionsFormWrapper>
     </AppWrapper>
   );
