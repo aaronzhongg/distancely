@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import logo from "./logo.svg";
 import "./App.css";
-import axios from "axios";
 
+// components
 import TextField from "./components/text-field";
+
+// services
+import GetDistanceTo from "./services/distance";
 
 const AppWrapper = styled.div`
   display: flex;
@@ -16,23 +19,6 @@ const DirectionsFormWrapper = styled.div`
 `;
 
 const Button = styled.button``;
-
-const GetDistanceTo = (fromAddress: string, toAddress: string) => {
-  // todo: move to another class
-  console.log("GetDistanceTo");
-  axios
-    .get(
-      `https://localhost:2442/DistanceCalculator?fromAddress=${encodeURIComponent(
-        fromAddress
-      )}&toAddress=${encodeURIComponent(toAddress)}`
-    )
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
 
 function App() {
   const [fromAddress, setFromAddress] = useState("");
