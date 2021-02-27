@@ -20,11 +20,18 @@ const DirectionsFormWrapper = styled.div`
 
 const Button = styled.button``;
 
+const Label = styled.label``;
+
+const ButtonClickHandler = () => {};
+
 function App() {
   const [fromAddress, setFromAddress] = useState("");
   const [toAddress, setToAddress] = useState("");
+  const [travelTime, setTravelTime] = useState("");
 
   // React.useEffect(() => console.log(fromAddress), [fromAddress]);
+
+  // React.useEffect(() => console.log(travelTime), [travelTime]);
 
   return (
     <AppWrapper>
@@ -39,10 +46,16 @@ function App() {
             setToAddress(event.target.value);
           }}
         />
-        <Button onClick={() => GetDistanceTo(fromAddress, toAddress)}>
+        <Button
+          onClick={async () => {
+            var response = await GetDistanceTo(fromAddress, toAddress);
+            setTravelTime(response.travelTime);
+          }}
+        >
           Get Distance To
         </Button>
       </DirectionsFormWrapper>
+      <Label>{travelTime}</Label>
     </AppWrapper>
   );
 }
