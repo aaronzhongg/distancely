@@ -40,6 +40,21 @@ const DirectionsFormWrapper = styled.div`
 
 const Label = styled.label``;
 
+// todo: move to helper file
+const FormatTime = (timeInSeconds: number) => {
+  if (timeInSeconds < 60) return `${Math.round(timeInSeconds)} seconds`;
+
+  if (timeInSeconds < 3600) return `${Math.round(timeInSeconds / 60)} minutes`;
+
+  return `${Math.round(timeInSeconds / 60 / 60)} hours`;
+};
+
+const FormatDistance = (distanceInMeters: number) => {
+  if (distanceInMeters < 100) return `${Math.round(distanceInMeters)} meters`;
+
+  return `${Math.round((distanceInMeters / 1000) * 10) / 10}km`;
+};
+
 function App() {
   const [fromAddress, setFromAddress] = useState("");
   const [toAddress, setToAddress] = useState("");
@@ -73,8 +88,8 @@ function App() {
         </DirectionsFormWrapper>
       </LeftSectionWrapper>
       <RightSectionWrapper>
-        <Label>Travel Time: {travelTime}</Label>
-        <Label>Distance: {distance}</Label>
+        <Label>Travel Time: {FormatTime(parseInt(travelTime))}</Label>
+        <Label>Distance: {FormatDistance(parseInt(distance))}</Label>
       </RightSectionWrapper>
     </AppWrapper>
   );
