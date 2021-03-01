@@ -8,10 +8,11 @@ const Input = styled.input`
 
 interface TextFieldProps {
   onChangeHandler?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyPressHandler?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
-const TextField = ({ onChangeHandler }: TextFieldProps) => {
-  return <Input onChange={onChangeHandler} />;
+const TextField = ({ onChangeHandler, onKeyPressHandler }: TextFieldProps) => {
+  return <Input onChange={onChangeHandler} onKeyPress={onKeyPressHandler} />;
 };
 
 export default TextField;

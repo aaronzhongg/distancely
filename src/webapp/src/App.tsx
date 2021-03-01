@@ -76,13 +76,23 @@ function App() {
             onChangeHandler={(event) => {
               setFromAddress(event.target.value);
             }}
+            onKeyPressHandler={(event) => {
+              if (event.key === "Enter") ButtonClickHandler();
+            }}
           />
           <TextField
             onChangeHandler={(event) => {
               setToAddress(event.target.value);
             }}
+            onKeyPressHandler={(event) => {
+              if (event.key === "Enter") ButtonClickHandler();
+            }}
           />
-          <Button onClickHandler={(event) => ButtonClickHandler()}>
+          <Button
+            onClickHandler={(event) => {
+              ButtonClickHandler();
+            }}
+          >
             Get Distance To
           </Button>
         </DirectionsFormWrapper>
