@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import logo from "./logo.svg";
 import "./App.css";
+import { device } from "./breakpoints";
 
 // components
 import TextField from "./components/text-field";
@@ -14,6 +15,9 @@ const AppWrapper = styled.div`
   display: flex;
   min-height: 100%;
   align-items: stretch;
+  @media ${device.sm} {
+    flex-direction: column;
+  }
 `;
 
 const LeftSectionWrapper = styled.div`
