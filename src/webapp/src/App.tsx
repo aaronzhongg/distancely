@@ -1,4 +1,4 @@
-import { HashRouter as Router, Switch, Route } from "react-router-dom"; // todo: BrowserRouter
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 // pages
 import Distance from "./pages/distance";
