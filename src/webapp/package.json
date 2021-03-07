@@ -1,6 +1,5 @@
 {
   "name": "webapp",
-  "homepage": "https://aaronzhongg.github.io/distance-to/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
