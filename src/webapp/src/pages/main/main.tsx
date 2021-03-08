@@ -13,6 +13,27 @@ const AppWrapper = styled.div`
   display: flex;
   min-height: 100%;
   align-items: stretch;
+  flex-direction: column;
+`;
+
+// todo: media query
+const HeadingWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Title = styled.p`
+  font-size: 48px;
+  font-weight: 700;
+`;
+
+const BodyWrapper = styled.div`
+  flex: 9;
+  display: flex;
   @media ${device.sm} {
     flex-direction: column;
   }
@@ -57,7 +78,7 @@ const FormatDistance = (distanceInMeters: number) => {
   return `${Math.round((distanceInMeters / 1000) * 10) / 10}km`;
 };
 
-const Distance = () => {
+const Main = () => {
   const [fromAddress, setFromAddress] = useState("");
   const [toAddress, setToAddress] = useState("");
   const [travelTime, setTravelTime] = useState("");
@@ -72,39 +93,44 @@ const Distance = () => {
 
   return (
     <AppWrapper>
-      <LeftSectionWrapper>
-        <DirectionsFormWrapper>
-          <TextField
-            onChangeHandler={(event) => {
-              setFromAddress(event.target.value);
-            }}
-            onKeyPressHandler={(event) => {
-              if (event.key === "Enter") ButtonClickHandler();
-            }}
-          />
-          <TextField
-            onChangeHandler={(event) => {
-              setToAddress(event.target.value);
-            }}
-            onKeyPressHandler={(event) => {
-              if (event.key === "Enter") ButtonClickHandler();
-            }}
-          />
-          <Button
-            onClickHandler={(event) => {
-              ButtonClickHandler();
-            }}
-          >
-            Get Distance To
-          </Button>
-        </DirectionsFormWrapper>
-      </LeftSectionWrapper>
-      <RightSectionWrapper>
-        <Label>Travel Time: {FormatTime(parseInt(travelTime))}</Label>
-        <Label>Distance: {FormatDistance(parseInt(distance))}</Label>
-      </RightSectionWrapper>
+      <HeadingWrapper>
+        <Title>distancely</Title>
+      </HeadingWrapper>
+      <BodyWrapper>
+        <LeftSectionWrapper>
+          <DirectionsFormWrapper>
+            <TextField
+              onChangeHandler={(event) => {
+                setFromAddress(event.target.value);
+              }}
+              onKeyPressHandler={(event) => {
+                if (event.key === "Enter") ButtonClickHandler();
+              }}
+            />
+            <TextField
+              onChangeHandler={(event) => {
+                setToAddress(event.target.value);
+              }}
+              onKeyPressHandler={(event) => {
+                if (event.key === "Enter") ButtonClickHandler();
+              }}
+            />
+            <Button
+              onClickHandler={(event) => {
+                ButtonClickHandler();
+              }}
+            >
+              Get Distance To
+            </Button>
+          </DirectionsFormWrapper>
+        </LeftSectionWrapper>
+        <RightSectionWrapper>
+          <Label>Travel Time: {FormatTime(parseInt(travelTime))}</Label>
+          <Label>Distance: {FormatDistance(parseInt(distance))}</Label>
+        </RightSectionWrapper>
+      </BodyWrapper>
     </AppWrapper>
   );
 };
 
-export default Distance;
+export default Main;

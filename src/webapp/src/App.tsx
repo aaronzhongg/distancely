@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 // pages
-import Distance from "./pages/distance";
+import Main from "./pages/main";
 import Test from "./pages/test";
 
 function App() {
@@ -9,7 +9,7 @@ function App() {
     <Router>
       <Switch>
         <Route exact path="/">
-          <Distance />
+          <Main />
         </Route>
         <Route path="/test">
           <Test />
