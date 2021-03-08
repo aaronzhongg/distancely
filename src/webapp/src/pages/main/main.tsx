@@ -29,6 +29,7 @@ const HeadingWrapper = styled.div`
 const Title = styled.p`
   font-size: 48px;
   font-weight: 700;
+  letter-spacing: -2px;
 `;
 
 const BodyWrapper = styled.div`
