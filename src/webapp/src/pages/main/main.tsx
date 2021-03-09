@@ -60,6 +60,10 @@ const RightSectionWrapper = styled.div`
 const DirectionsFormWrapper = styled.div`
   display: flex;
   flex-direction: column;
+
+  & > * {
+    margin: 5px 15px;
+  }
 `;
 
 const Label = styled.label``;
@@ -107,6 +111,7 @@ const Main = () => {
               onKeyPressHandler={(event) => {
                 if (event.key === "Enter") ButtonClickHandler();
               }}
+              placeholder={"From"}
             />
             <TextField
               onChangeHandler={(event) => {
@@ -115,6 +120,7 @@ const Main = () => {
               onKeyPressHandler={(event) => {
                 if (event.key === "Enter") ButtonClickHandler();
               }}
+              placeholder={"To"}
             />
             <Button
               onClickHandler={(event) => {
