@@ -66,6 +66,15 @@ const DirectionsFormWrapper = styled.div`
   }
 `;
 
+const ButtonWrapper = styled.div`
+  display: flex;
+  margin-top: 20px;
+
+  & > * {
+    flex-grow: 1;
+  }
+`;
+
 const Label = styled.label``;
 
 // todo: move to helper file
@@ -122,13 +131,15 @@ const Main = () => {
               }}
               placeholder={"To"}
             />
-            <Button
-              onClickHandler={(event) => {
-                ButtonClickHandler();
-              }}
-            >
-              Get Distance To
-            </Button>
+            <ButtonWrapper>
+              <Button
+                onClickHandler={(event) => {
+                  ButtonClickHandler();
+                }}
+              >
+                Get Distance
+              </Button>
+            </ButtonWrapper>
           </DirectionsFormWrapper>
         </LeftSectionWrapper>
         <RightSectionWrapper>
