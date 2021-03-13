@@ -79,6 +79,8 @@ const Label = styled.label``;
 
 // todo: move to helper file
 const FormatTime = (timeInSeconds: number) => {
+  if (!timeInSeconds) return;
+
   if (timeInSeconds < 60) return `${Math.round(timeInSeconds)} seconds`;
 
   if (timeInSeconds < 3600) return `${Math.round(timeInSeconds / 60)} minutes`;
@@ -87,6 +89,8 @@ const FormatTime = (timeInSeconds: number) => {
 };
 
 const FormatDistance = (distanceInMeters: number) => {
+  if (!distanceInMeters) return;
+
   if (distanceInMeters < 100) return `${Math.round(distanceInMeters)} meters`;
 
   return `${Math.round((distanceInMeters / 1000) * 10) / 10}km`;
