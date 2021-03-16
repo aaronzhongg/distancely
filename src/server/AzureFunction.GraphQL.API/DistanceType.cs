@@ -1,4 +1,5 @@
 ﻿using System;
+using Application.UseCases.CalculateDistanceTo;
 using Domain;
 using GraphQL.Types;
 using GraphQL.Utilities;
@@ -18,11 +19,21 @@ namespace AzureFunction.GraphQL.API
 
     public class DistanceQuery : ObjectGraphType
     {
-        public DistanceQuery()
+        CalculateDistanceToPresenter presenter;
+
+        public DistanceQuery(ICalculateDistanceToUseCase calculateDistanceToUseCase)
         {
-            Field<DistanceType>(
+            presenter = new CalculateDistanceToPresenter();
+
+            FieldAsync<DistanceType>(
               "distance",
-              resolve: context => new Distance { DistanceMeters= 1, TravelTime = 1 }
+              resolve: async context =>
+              {
+                  calculateDistanceToUseCase.SetOutputPort(presenter);
+                  await calculateDistanceToUseCase.Execute("1 Nelson Street, Auckland", "96 Holly Street, Avondale");
+                  return presenter.Distance;
+              }
+                  
             );
         }
     }
