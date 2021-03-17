@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "tests\UnitTest
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunction.GraphQL.API", "AzureFunction.GraphQL.API\AzureFunction.GraphQL.API.csproj", "{156D421D-0868-4397-BC1D-6C8DD684EB15}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphQL.Common", "GraphQL\GraphQL.Common.csproj", "{FE6F8D05-ED7F-4AD8-BE42-9FA485990529}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +52,10 @@ Global
 		{156D421D-0868-4397-BC1D-6C8DD684EB15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{156D421D-0868-4397-BC1D-6C8DD684EB15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{156D421D-0868-4397-BC1D-6C8DD684EB15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE6F8D05-ED7F-4AD8-BE42-9FA485990529}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE6F8D05-ED7F-4AD8-BE42-9FA485990529}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE6F8D05-ED7F-4AD8-BE42-9FA485990529}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE6F8D05-ED7F-4AD8-BE42-9FA485990529}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{05FC9E7D-5E6E-4C0A-B87E-9198904DF80E} = {3115296E-EB32-4B29-81BA-552E5151BFF4}

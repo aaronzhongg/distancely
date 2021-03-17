@@ -2,6 +2,8 @@
 using Application.UseCases.CalculateDistanceTo;
 using AzureFunction.GraphQL.API;
 using GraphQL;
+using GraphQL.Common.Queries;
+using GraphQL.Common.Types;
 using GraphQL.NewtonsoftJson;
 using GraphQL.Server;
 using GraphQL.Types;

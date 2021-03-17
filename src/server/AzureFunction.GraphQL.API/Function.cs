@@ -14,11 +14,11 @@ using GraphQL;
 
 namespace AzureFunction.GraphQL.API
 {
-    public class GraphQL
+    public class Function
     {
         private readonly IGraphQLExecuter<ISchema> _graphQLExecuter;
 
-        public GraphQL(IGraphQLExecuter<ISchema> graphQLExecuter)
+        public Function(IGraphQLExecuter<ISchema> graphQLExecuter)
         {
             _graphQLExecuter = graphQLExecuter;
         }
