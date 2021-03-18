@@ -4,5 +4,6 @@
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
     "GoogleOptions:ApiKey": "AIzaSyCEF3N7bDZwQocGaow0SHIKdi6U4LzCPWU"
-  }
+  },
+  "Host": { "LocalHttpPort": 7071, "CORS": "*" }
 }
