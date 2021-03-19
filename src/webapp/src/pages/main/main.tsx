@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { device } from "../../breakpoints";
+import { useLazyQuery, gql } from "@apollo/client";
 
 // components
 import TextField from "../../components/text-field";
 import Button from "../../components/button";
 
 // services
-import GetDistanceTo from "../../services/distance";
+import { GET_DISTANCE } from "../../graphql/queries";
 
 const AppWrapper = styled.div`
   display: flex;
@@ -99,15 +100,14 @@ const FormatDistance = (distanceInMeters: number) => {
 const Main = () => {
   const [fromAddress, setFromAddress] = useState("");
   const [toAddress, setToAddress] = useState("");
-  const [travelTime, setTravelTime] = useState("");
-  const [distance, setDistance] = useState("");
+
+  const [getDistance, { loading, called, error, data }] = useLazyQuery(
+    GET_DISTANCE
+  );
 
   // React.useEffect(() => console.log(fromAddress), [fromAddress]);
-  const ButtonClickHandler = async () => {
-    var response = await GetDistanceTo(fromAddress, toAddress);
-    setTravelTime(response.travelTime);
-    setDistance(response.distanceMeters);
-  };
+
+  // if (loading) return <p>Loading...</p>;
 
   return (
     <AppWrapper>
@@ -122,7 +122,7 @@ const Main = () => {
                 setFromAddress(event.target.value);
               }}
               onKeyPressHandler={(event) => {
-                if (event.key === "Enter") ButtonClickHandler();
+                if (event.key === "Enter") getDistance();
               }}
               placeholder={"From"}
             />
@@ -131,14 +131,14 @@ const Main = () => {
                 setToAddress(event.target.value);
               }}
               onKeyPressHandler={(event) => {
-                if (event.key === "Enter") ButtonClickHandler();
+                if (event.key === "Enter") getDistance();
               }}
               placeholder={"To"}
             />
             <ButtonWrapper>
               <Button
                 onClickHandler={(event) => {
-                  ButtonClickHandler();
+                  getDistance();
                 }}
               >
                 Get Distance
@@ -147,8 +147,14 @@ const Main = () => {
           </DirectionsFormWrapper>
         </LeftSectionWrapper>
         <RightSectionWrapper>
-          <Label>Travel Time: {FormatTime(parseInt(travelTime))}</Label>
-          <Label>Distance: {FormatDistance(parseInt(distance))}</Label>
+          <Label>
+            Travel Time:{" "}
+            {data && FormatTime(parseInt(data.distance.travelTime))}
+          </Label>
+          <Label>
+            Distance:{" "}
+            {data && FormatDistance(parseInt(data.distance.distanceMeters))}
+          </Label>
         </RightSectionWrapper>
       </BodyWrapper>
     </AppWrapper>
