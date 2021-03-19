@@ -122,7 +122,8 @@ const Main = () => {
                 setFromAddress(event.target.value);
               }}
               onKeyPressHandler={(event) => {
-                if (event.key === "Enter") getDistance();
+                if (event.key === "Enter")
+                  getDistance({ variables: { fromAddress, toAddress } });
               }}
               placeholder={"From"}
             />
@@ -131,14 +132,16 @@ const Main = () => {
                 setToAddress(event.target.value);
               }}
               onKeyPressHandler={(event) => {
-                if (event.key === "Enter") getDistance();
+                if (event.key === "Enter")
+                  getDistance({ variables: { fromAddress, toAddress } });
               }}
               placeholder={"To"}
             />
             <ButtonWrapper>
               <Button
                 onClickHandler={(event) => {
-                  getDistance();
+                  console.log("here");
+                  getDistance({ variables: { fromAddress, toAddress } });
                 }}
               >
                 Get Distance
