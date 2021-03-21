@@ -5,10 +5,10 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import "typeface-inter";
 import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
-import { gql } from "@apollo/client";
 
 const client = new ApolloClient({
-  uri: "http://localhost:7071/api/GraphQL", // todo: put in settings file
+  uri: `https://distancely-dev.azurewebsites.net/api/GraphQL?code=FC9ushR1JEanYGS3Sve2bHAXIlK04SkXkHUYfJ5DBmHPdaateFeqTA==`, // todo: put in settings file
+  // uri: `http://localhost:7071/api/GraphQL`,
   cache: new InMemoryCache(),
 });
 

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { device } from "../../breakpoints";
-import { useLazyQuery, gql } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 
 // components
 import TextField from "../../components/text-field";
@@ -101,7 +101,7 @@ const Main = () => {
   const [fromAddress, setFromAddress] = useState("");
   const [toAddress, setToAddress] = useState("");
 
-  const [getDistance, { loading, called, error, data }] = useLazyQuery(
+  const [getDistance, { /*loading, error,*/ data }] = useLazyQuery(
     GET_DISTANCE
   );
 
