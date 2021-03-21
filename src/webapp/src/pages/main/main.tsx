@@ -21,10 +21,13 @@ const AppWrapper = styled.div`
 const HeadingWrapper = styled.div`
   display: flex;
   width: 100%;
-  position: fixed;
   top: 0;
   align-items: center;
   justify-content: center;
+
+  @media ${device.min_sm} {
+    position: fixed;
+  }
 `;
 
 const Title = styled.p`
@@ -36,7 +39,7 @@ const Title = styled.p`
 const BodyWrapper = styled.div`
   flex: 9;
   display: flex;
-  @media ${device.sm} {
+  @media ${device.max_sm} {
     flex-direction: column;
   }
 `;
@@ -56,6 +59,21 @@ const RightSectionWrapper = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
+
+  & > * {
+    margin: 20px;
+  }
+`;
+
+const Card = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+const CardText = styled.div`
+  font-size: 48px;
 `;
 
 const DirectionsFormWrapper = styled.div`
@@ -101,7 +119,7 @@ const Main = () => {
   const [fromAddress, setFromAddress] = useState("");
   const [toAddress, setToAddress] = useState("");
 
-  const [getDistance, { /*loading, error,*/ data }] = useLazyQuery(
+  const [getDistance, { loading, /*error,*/ data }] = useLazyQuery(
     GET_DISTANCE
   );
 
@@ -150,14 +168,28 @@ const Main = () => {
           </DirectionsFormWrapper>
         </LeftSectionWrapper>
         <RightSectionWrapper>
-          <Label>
+          <Card>
+            <CardText>
+              {loading && "loading"}
+              {data && FormatTime(parseInt(data.distance.travelTime))}
+            </CardText>
+            <Label> Travel Time</Label>
+          </Card>
+          <Card>
+            <CardText>
+              {loading && "loading"}
+              {data && FormatDistance(parseInt(data.distance.distanceMeters))}
+            </CardText>
+            <Label>Distance</Label>
+          </Card>
+          {/* <Label>
             Travel Time:{" "}
             {data && FormatTime(parseInt(data.distance.travelTime))}
           </Label>
           <Label>
             Distance:{" "}
             {data && FormatDistance(parseInt(data.distance.distanceMeters))}
-          </Label>
+          </Label> */}
         </RightSectionWrapper>
       </BodyWrapper>
     </AppWrapper>
