@@ -172,6 +172,7 @@ const Main = () => {
             <CardText>
               {loading && "loading"}
               {data && FormatTime(parseInt(data.distance.travelTime))}
+              {!loading && !data && "?"}
             </CardText>
             <Label> Travel Time</Label>
           </Card>
@@ -179,6 +180,7 @@ const Main = () => {
             <CardText>
               {loading && "loading"}
               {data && FormatDistance(parseInt(data.distance.distanceMeters))}
+              {!loading && !data && "?"}
             </CardText>
             <Label>Distance</Label>
           </Card>

@@ -6,6 +6,7 @@ const Input = styled.input`
   font-size: 24px;
   border: none;
   border-bottom: 2px solid black;
+  text-transform: capitalize; // todo: conditional css
 
   &:focus {
     outline: none;
