@@ -9,6 +9,8 @@ import Button from "../../components/button";
 
 // services
 import { GET_DISTANCE } from "../../graphql/queries";
+import axios from "axios";
+// import GetUserCountry from "../../services/user-location";
 
 const AppWrapper = styled.div`
   display: flex;
@@ -115,17 +117,44 @@ const FormatDistance = (distanceInMeters: number) => {
   return `${Math.round((distanceInMeters / 1000) * 10) / 10}km`;
 };
 
+// todo: move to shared file
+async function GetUserCountry(): Promise<string> {
+  var result = await axios("https://extreme-ip-lookup.com/json/");
+
+  if (result.status === 200) return result.data.country;
+
+  console.log("Cannot retrieve country");
+  return "";
+}
+
 const Main = () => {
   const [fromAddress, setFromAddress] = useState("");
   const [toAddress, setToAddress] = useState("");
+  const [userCountry, setUserCountry] = useState("");
 
   const [getDistance, { loading, /*error,*/ data }] = useLazyQuery(
     GET_DISTANCE
   );
 
-  // React.useEffect(() => console.log(fromAddress), [fromAddress]);
+  React.useEffect(() => {
+    const fetchUserCountry = async () => {
+      var userCountry = await GetUserCountry();
+      setUserCountry(userCountry);
+    };
+    fetchUserCountry();
+  }, []);
 
-  // if (loading) return <p>Loading...</p>;
+  const onSubmitHandler = () => {
+    var fromAddressPlusCountry = `${fromAddress}, ${userCountry}`;
+    var toAddressPlusCountry = `${toAddress}, ${userCountry}`;
+    console.log(fromAddressPlusCountry);
+    getDistance({
+      variables: {
+        fromAddress: fromAddressPlusCountry,
+        toAddress: toAddressPlusCountry,
+      },
+    });
+  };
 
   return (
     <AppWrapper>
@@ -140,8 +169,7 @@ const Main = () => {
                 setFromAddress(event.target.value);
               }}
               onKeyPressHandler={(event) => {
-                if (event.key === "Enter")
-                  getDistance({ variables: { fromAddress, toAddress } });
+                if (event.key === "Enter") onSubmitHandler();
               }}
               placeholder={"From"}
             />
@@ -150,16 +178,14 @@ const Main = () => {
                 setToAddress(event.target.value);
               }}
               onKeyPressHandler={(event) => {
-                if (event.key === "Enter")
-                  getDistance({ variables: { fromAddress, toAddress } });
+                if (event.key === "Enter") onSubmitHandler();
               }}
               placeholder={"To"}
             />
             <ButtonWrapper>
               <Button
                 onClickHandler={(event) => {
-                  console.log("here");
-                  getDistance({ variables: { fromAddress, toAddress } });
+                  onSubmitHandler();
                 }}
               >
                 Get Distance
