@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 const InputWrapper = styled.div`
-  display: flex;
+  display: inline-flex;
   position: relative;
   align-items: center;
 `;
@@ -24,7 +24,7 @@ const IconButton = styled.button`
   right: 0px;
 `;
 
-interface TextFieldProps {
+export interface TextFieldProps {
   // text field
   onChangeHandler?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onKeyPressHandler?: (event: React.KeyboardEvent<HTMLInputElement>) => void;

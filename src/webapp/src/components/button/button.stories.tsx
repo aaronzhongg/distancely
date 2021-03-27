@@ -12,7 +12,7 @@ export default {
 
 const Template: Story<ButtonProps> = (args) => <Button {...args} />;
 
-export const DistancelyButton = Template.bind({});
-DistancelyButton.args = {
+export const Default = Template.bind({});
+Default.args = {
   children: "Button",
 };
