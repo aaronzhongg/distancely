@@ -171,7 +171,7 @@ const Main = () => {
               onKeyPressHandler={(event) => {
                 if (event.key === "Enter") onSubmitHandler();
               }}
-              placeholder={"From"}
+              placeholderText={"From"}
             />
             <TextField
               onChangeHandler={(event) => {
@@ -180,7 +180,8 @@ const Main = () => {
               onKeyPressHandler={(event) => {
                 if (event.key === "Enter") onSubmitHandler();
               }}
-              placeholder={"To"}
+              placeholderText={"To"}
+              buttonText={"+"}
             />
             <ButtonWrapper>
               <Button
@@ -210,14 +211,6 @@ const Main = () => {
             </CardText>
             <Label>Distance</Label>
           </Card>
-          {/* <Label>
-            Travel Time:{" "}
-            {data && FormatTime(parseInt(data.distance.travelTime))}
-          </Label>
-          <Label>
-            Distance:{" "}
-            {data && FormatDistance(parseInt(data.distance.distanceMeters))}
-          </Label> */}
         </RightSectionWrapper>
       </BodyWrapper>
     </AppWrapper>

@@ -1,6 +1,12 @@
 import React from "react";
 import styled from "styled-components";
 
+const InputWrapper = styled.div`
+  display: flex;
+  position: relative;
+  align-items: center;
+`;
+
 const Input = styled.input`
   padding: 5px 8px;
   font-size: 24px;
@@ -13,23 +19,44 @@ const Input = styled.input`
   }
 `;
 
+const IconButton = styled.button`
+  position: absolute;
+  right: 0px;
+`;
+
 interface TextFieldProps {
+  // text field
   onChangeHandler?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onKeyPressHandler?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
-  placeholder?: string;
+  placeholderText?: string;
+
+  // button
+  onButtonPressHandler?: React.KeyboardEventHandler<HTMLButtonElement>;
+  buttonText?: string;
 }
 
 const TextField = ({
+  // text field
+
   onChangeHandler,
   onKeyPressHandler,
-  placeholder,
+  placeholderText,
+
+  // button
+  onButtonPressHandler,
+  buttonText,
 }: TextFieldProps) => {
   return (
-    <Input
-      onChange={onChangeHandler}
-      onKeyPress={onKeyPressHandler}
-      placeholder={placeholder}
-    />
+    <InputWrapper>
+      <Input
+        onChange={onChangeHandler}
+        onKeyPress={onKeyPressHandler}
+        placeholder={placeholderText}
+      />
+      {buttonText && (
+        <IconButton onKeyPress={onButtonPressHandler}>{buttonText}</IconButton>
+      )}
+    </InputWrapper>
   );
 };
 
