@@ -3,14 +3,15 @@ import styled from "styled-components";
 
 const ButtonComponent = styled.button`
   height: 42px;
-  font-size: 24px;
+  font-size: 20px;
   border-radius: 21px;
   border: 0px;
   background-color: #2ba84a;
   color: white;
+  padding: 10px 16px;
 `;
 
-interface ButtonProps {
+export interface ButtonProps {
   onClickHandler?: (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => void;
