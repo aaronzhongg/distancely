@@ -3,7 +3,7 @@ import { Story, Meta } from "@storybook/react/types-6-0";
 import TextField, { TextFieldProps } from "./text-field";
 
 export default {
-  title: "Example/TextField",
+  title: "Distancely/TextField",
   component: TextField,
   argTypes: {
     buttonText: { control: "text" },
