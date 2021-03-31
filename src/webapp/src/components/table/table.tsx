@@ -1,37 +1,30 @@
-import React from "react";
-import styled from "styled-components";
+import TableRows from "./table-body";
+import TableHeader from "./table-header";
 
-const TableWrapper = styled.table``;
+export type ColumnDefinitionType<T, K extends keyof T> = {
+  key: K;
+  header: string;
+  width?: number;
+};
 
-const HeaderRow = styled.tr``;
+export type TableProps<T, K extends keyof T> = {
+  data: Array<T>;
+  columns: Array<ColumnDefinitionType<T, K>>;
+};
 
-const HeaderColumn = styled.th``;
+const style = {
+  borderCollapse: "collapse",
+} as const;
 
-const Row = styled.tr``;
-
-const Column = styled.td``;
-
-export interface TableProps {
-  headers?: string[];
-  rowData?: any[][];
-}
-
-const Table = ({ headers, rowData }: TableProps) => {
+const Table = <T, K extends keyof T>({
+  data,
+  columns,
+}: TableProps<T, K>): JSX.Element => {
   return (
-    <TableWrapper>
-      <HeaderRow>
-        {headers?.map((h) => (
-          <HeaderColumn>{h}</HeaderColumn>
-        ))}
-      </HeaderRow>
-      {rowData?.map((row) => (
-        <Row>
-          {row.map((r) => (
-            <Column>{r}</Column>
-          ))}
-        </Row>
-      ))}
-    </TableWrapper>
+    <table style={style}>
+      <TableHeader columns={columns} />
+      <TableRows data={data} columns={columns} />
+    </table>
   );
 };
 

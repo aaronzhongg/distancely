@@ -31,7 +31,7 @@ export interface TextFieldProps {
   placeholderText?: string;
 
   // button
-  onButtonPressHandler?: React.KeyboardEventHandler<HTMLButtonElement>;
+  onButtonClickHandler?: React.MouseEventHandler<HTMLButtonElement>;
   buttonText?: string;
 }
 
@@ -43,7 +43,7 @@ const TextField = ({
   placeholderText,
 
   // button
-  onButtonPressHandler,
+  onButtonClickHandler,
   buttonText,
 }: TextFieldProps) => {
   return (
@@ -54,7 +54,7 @@ const TextField = ({
         placeholder={placeholderText}
       />
       {buttonText && (
-        <IconButton onKeyPress={onButtonPressHandler}>{buttonText}</IconButton>
+        <IconButton onClick={onButtonClickHandler}>{buttonText}</IconButton>
       )}
     </InputWrapper>
   );
