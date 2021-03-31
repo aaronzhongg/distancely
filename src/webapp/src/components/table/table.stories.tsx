@@ -8,20 +8,64 @@ export default {
   argTypes: {},
 } as Meta;
 
-interface Cat {
+// todo: put type in a shared models dir
+type Distance = {
+  destination: string;
+  travelTime: number;
+  distance: number;
+};
+
+const DistanceTemplate: Story<TableProps<Distance, keyof Distance>> = (
+  args
+) => <Table {...args} />;
+
+const distanceColumns: ColumnDefinitionType<Distance, keyof Distance>[] = [
+  {
+    key: "destination",
+    header: "Name",
+    width: 150,
+  },
+  {
+    key: "travelTime",
+    header: "Travel Time",
+  },
+  {
+    key: "distance",
+    header: "Distance",
+  },
+];
+
+export const Default = DistanceTemplate.bind({});
+Default.args = {
+  columns: distanceColumns,
+  data: [
+    {
+      destination: "106 Glenmore Road",
+      travelTime: 100,
+      distance: 12000,
+    },
+    {
+      destination: "1 Nelson Street",
+      travelTime: 120,
+      distance: 18200,
+    },
+  ],
+};
+
+type Cat = {
   name: string;
   age: number;
   gender: string;
   color: string;
   activityLevel?: string; // optional, same as string | undefined
   favoriteFood?: string; // optional, same as string | undefined
-}
+};
 
-const Template: Story<TableProps<Cat, keyof Cat>> = (args) => (
+const CatTemplate: Story<TableProps<Cat, keyof Cat>> = (args) => (
   <Table {...args} />
 );
 
-const columns: ColumnDefinitionType<Cat, keyof Cat>[] = [
+const catColumns: ColumnDefinitionType<Cat, keyof Cat>[] = [
   {
     key: "name",
     header: "Name",
@@ -37,9 +81,9 @@ const columns: ColumnDefinitionType<Cat, keyof Cat>[] = [
   },
 ];
 
-export const Default = Template.bind({});
-Default.args = {
-  columns: columns,
+export const CatExample = CatTemplate.bind({});
+CatExample.args = {
+  columns: catColumns,
   data: [
     {
       name: "Mittens",

@@ -10,6 +10,8 @@ import Button from "../../components/button";
 // services
 import { GET_DISTANCE } from "../../graphql/queries";
 import axios from "axios";
+import Table from "../../components/table";
+
 // import GetUserCountry from "../../services/user-location";
 
 const AppWrapper = styled.div`
@@ -48,6 +50,7 @@ const BodyWrapper = styled.div`
 
 const LeftSectionWrapper = styled.div`
   display: flex;
+  flex-direction: column;
   // background: blue;
   flex: 1;
   align-items: center;
@@ -130,6 +133,9 @@ async function GetUserCountry(): Promise<string> {
 const Main = () => {
   const [fromAddress, setFromAddress] = useState("");
   const [toAddress, setToAddress] = useState("");
+  const [destinationAddresses, setDestinationAddresses] = useState<string[]>(
+    []
+  );
   const [userCountry, setUserCountry] = useState("");
 
   const [getDistance, { loading, /*error,*/ data }] = useLazyQuery(
@@ -178,12 +184,22 @@ const Main = () => {
                 setToAddress(event.target.value);
               }}
               onKeyPressHandler={(event) => {
-                if (event.key === "Enter") onSubmitHandler();
+                if (event.key === "Enter") {
+                  setDestinationAddresses(
+                    destinationAddresses.concat(toAddress)
+                  );
+                  setToAddress("");
+                }
               }}
               placeholderText={"To"}
               buttonText={"+"}
+              onButtonClickHandler={() => {
+                setDestinationAddresses(destinationAddresses.concat(toAddress));
+                setToAddress("");
+              }}
             />
-            <ButtonWrapper>
+
+            {/* <ButtonWrapper>
               <Button
                 onClickHandler={(event) => {
                   onSubmitHandler();
@@ -191,10 +207,14 @@ const Main = () => {
               >
                 Get Distance
               </Button>
-            </ButtonWrapper>
+            </ButtonWrapper> */}
           </DirectionsFormWrapper>
+          {/* <Table
+            headers={["Destinations", "Travel Time", "Distance"]}
+            rowData={destinationAddresses.map((d) => [d, , "2"])}
+          /> */}
         </LeftSectionWrapper>
-        <RightSectionWrapper>
+        {/* <RightSectionWrapper>
           <Card>
             <CardText>
               {loading && "loading"}
@@ -211,7 +231,7 @@ const Main = () => {
             </CardText>
             <Label>Distance</Label>
           </Card>
-        </RightSectionWrapper>
+        </RightSectionWrapper> */}
       </BodyWrapper>
     </AppWrapper>
   );
