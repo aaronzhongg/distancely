@@ -1,5 +1,8 @@
+import styled from "styled-components";
 import TableRows from "./table-body";
 import TableHeader from "./table-header";
+
+const TableWrapper = styled.table``;
 
 export type ColumnDefinitionType<T, K extends keyof T> = {
   key: K;
@@ -13,7 +16,7 @@ export type TableProps<T, K extends keyof T> = {
 };
 
 const style = {
-  borderCollapse: "collapse",
+  // borderCollapse: "collapse",
 } as const;
 
 const Table = <T, K extends keyof T>({
@@ -21,10 +24,10 @@ const Table = <T, K extends keyof T>({
   columns,
 }: TableProps<T, K>): JSX.Element => {
   return (
-    <table style={style}>
+    <TableWrapper style={style}>
       <TableHeader columns={columns} />
       <TableRows data={data} columns={columns} />
-    </table>
+    </TableWrapper>
   );
 };
 
