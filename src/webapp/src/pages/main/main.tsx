@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import { device } from "../../breakpoints";
 import { useLazyQuery } from "@apollo/client";
@@ -142,26 +142,27 @@ async function GetUserCountry(): Promise<string> {
 }
 
 const Main = () => {
-  const [fromAddress, setFromAddress] = useState("");
-  const [userCountry, setUserCountry] = useState("");
+  const fromAddressRef = useRef("");
+  const userCountryRef = useRef("");
 
   React.useEffect(() => {
     const fetchUserCountry = async () => {
       var userCountry = await GetUserCountry();
-      setUserCountry(userCountry);
+      userCountryRef.current = userCountry;
     };
     fetchUserCountry();
   }, []);
 
   const Row = () => {
-    const [destination, setDestination] = useState("");
+    const destinationRef = useRef("");
+    // const [destination, setDestination] = useState("");
     const [getDistance, { loading, /*error,*/ data }] = useLazyQuery(
       GET_DISTANCE
     );
 
     const onSubmitHandler = () => {
-      var fromAddressPlusCountry = `${fromAddress}, ${userCountry}`;
-      var toAddressPlusCountry = `${destination}, ${userCountry}`;
+      var fromAddressPlusCountry = `${fromAddressRef.current}, ${userCountryRef.current}`;
+      var toAddressPlusCountry = `${destinationRef.current}, ${userCountryRef.current}`;
       console.log(fromAddressPlusCountry);
       getDistance({
         variables: {
@@ -176,7 +177,7 @@ const Main = () => {
         <Cell>
           <TextField
             onChangeHandler={(event) => {
-              setDestination(event.target.value);
+              destinationRef.current = event.target.value;
             }}
             onKeyPressHandler={(event) => {
               if (event.key === "Enter") {
@@ -187,6 +188,7 @@ const Main = () => {
             placeholderText={"To"}
             buttonText={"+"}
             onButtonClickHandler={() => {
+              onSubmitHandler();
               // setDestinationAddresses(
               //   destinationAddresses.concat({
               //     destination: toAddress,
@@ -222,7 +224,7 @@ const Main = () => {
           <DirectionsFormWrapper>
             <TextField
               onChangeHandler={(event) => {
-                setFromAddress(event.target.value);
+                fromAddressRef.current = event.target.value;
               }}
               placeholderText={"From"}
             />
