@@ -10,7 +10,6 @@ import Button from "../../components/button";
 // services
 import { GET_DISTANCE } from "../../graphql/queries";
 import axios from "axios";
-import Table from "../../components/table";
 
 // import GetUserCountry from "../../services/user-location";
 
@@ -99,7 +98,19 @@ const ButtonWrapper = styled.div`
   }
 `;
 
-const Label = styled.label``;
+const Table = styled.table``;
+
+const Header = styled.thead``;
+
+const HeaderRow = styled.tr``;
+
+const HeaderColumn = styled.th``;
+
+const Body = styled.tbody``;
+
+const RowWrapper = styled.tr``;
+
+const Cell = styled.td``;
 
 // todo: move to helper file
 const FormatTime = (timeInSeconds: number) => {
@@ -132,15 +143,7 @@ async function GetUserCountry(): Promise<string> {
 
 const Main = () => {
   const [fromAddress, setFromAddress] = useState("");
-  const [toAddress, setToAddress] = useState("");
-  const [destinationAddresses, setDestinationAddresses] = useState<string[]>(
-    []
-  );
   const [userCountry, setUserCountry] = useState("");
-
-  const [getDistance, { loading, /*error,*/ data }] = useLazyQuery(
-    GET_DISTANCE
-  );
 
   React.useEffect(() => {
     const fetchUserCountry = async () => {
@@ -150,16 +153,63 @@ const Main = () => {
     fetchUserCountry();
   }, []);
 
-  const onSubmitHandler = () => {
-    var fromAddressPlusCountry = `${fromAddress}, ${userCountry}`;
-    var toAddressPlusCountry = `${toAddress}, ${userCountry}`;
-    console.log(fromAddressPlusCountry);
-    getDistance({
-      variables: {
-        fromAddress: fromAddressPlusCountry,
-        toAddress: toAddressPlusCountry,
-      },
-    });
+  const Row = () => {
+    const [destination, setDestination] = useState("");
+    const [getDistance, { loading, /*error,*/ data }] = useLazyQuery(
+      GET_DISTANCE
+    );
+
+    const onSubmitHandler = () => {
+      var fromAddressPlusCountry = `${fromAddress}, ${userCountry}`;
+      var toAddressPlusCountry = `${destination}, ${userCountry}`;
+      console.log(fromAddressPlusCountry);
+      getDistance({
+        variables: {
+          fromAddress: fromAddressPlusCountry,
+          toAddress: toAddressPlusCountry,
+        },
+      });
+    };
+
+    return (
+      <RowWrapper>
+        <Cell>
+          <TextField
+            onChangeHandler={(event) => {
+              setDestination(event.target.value);
+            }}
+            onKeyPressHandler={(event) => {
+              if (event.key === "Enter") {
+                onSubmitHandler();
+                // todo: clear to addy
+              }
+            }}
+            placeholderText={"To"}
+            buttonText={"+"}
+            onButtonClickHandler={() => {
+              // setDestinationAddresses(
+              //   destinationAddresses.concat({
+              //     destination: toAddress,
+              //     travelTime: 100,
+              //     distance: 100,
+              //   })
+              // );
+            }}
+          />
+        </Cell>
+        <Cell>
+          {loading && "loading"}
+          {data && FormatTime(parseInt(data.distance.travelTime))}
+          {!loading && !data && "?"}
+        </Cell>
+        <Cell>
+          {" "}
+          {loading && "loading"}
+          {data && FormatDistance(parseInt(data.distance.distanceMeters))}
+          {!loading && !data && "?"}
+        </Cell>
+      </RowWrapper>
+    );
   };
 
   return (
@@ -174,64 +224,24 @@ const Main = () => {
               onChangeHandler={(event) => {
                 setFromAddress(event.target.value);
               }}
-              onKeyPressHandler={(event) => {
-                if (event.key === "Enter") onSubmitHandler();
-              }}
               placeholderText={"From"}
             />
-            <TextField
-              onChangeHandler={(event) => {
-                setToAddress(event.target.value);
-              }}
-              onKeyPressHandler={(event) => {
-                if (event.key === "Enter") {
-                  setDestinationAddresses(
-                    destinationAddresses.concat(toAddress)
-                  );
-                  setToAddress("");
-                }
-              }}
-              placeholderText={"To"}
-              buttonText={"+"}
-              onButtonClickHandler={() => {
-                setDestinationAddresses(destinationAddresses.concat(toAddress));
-                setToAddress("");
-              }}
-            />
-
-            {/* <ButtonWrapper>
-              <Button
-                onClickHandler={(event) => {
-                  onSubmitHandler();
-                }}
-              >
-                Get Distance
-              </Button>
-            </ButtonWrapper> */}
           </DirectionsFormWrapper>
-          {/* <Table
-            headers={["Destinations", "Travel Time", "Distance"]}
-            rowData={destinationAddresses.map((d) => [d, , "2"])}
-          /> */}
+          {/* <DestinationMatrix></DestinationMatrix> */}
+          <Table>
+            <Header>
+              <HeaderRow>
+                <HeaderColumn>Destination</HeaderColumn>
+                <HeaderColumn>Travel Time</HeaderColumn>
+                <HeaderColumn>Distance</HeaderColumn>
+              </HeaderRow>
+            </Header>
+            <Body>
+              <Row />
+              <Row />
+            </Body>
+          </Table>
         </LeftSectionWrapper>
-        {/* <RightSectionWrapper>
-          <Card>
-            <CardText>
-              {loading && "loading"}
-              {data && FormatTime(parseInt(data.distance.travelTime))}
-              {!loading && !data && "?"}
-            </CardText>
-            <Label> Travel Time</Label>
-          </Card>
-          <Card>
-            <CardText>
-              {loading && "loading"}
-              {data && FormatDistance(parseInt(data.distance.distanceMeters))}
-              {!loading && !data && "?"}
-            </CardText>
-            <Label>Distance</Label>
-          </Card>
-        </RightSectionWrapper> */}
       </BodyWrapper>
     </AppWrapper>
   );
