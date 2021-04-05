@@ -1,4 +1,5 @@
 import { Story, Meta } from "@storybook/react/types-6-0";
+import { Distance } from "../../types/distance";
 
 import Table, { ColumnDefinitionType, TableProps } from "./table";
 
@@ -7,13 +8,6 @@ export default {
   component: Table,
   argTypes: {},
 } as Meta;
-
-// todo: put type in a shared models dir
-type Distance = {
-  destination: string;
-  travelTime: number;
-  distance: number;
-};
 
 const DistanceTemplate: Story<TableProps<Distance, keyof Distance>> = (
   args
