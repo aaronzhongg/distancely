@@ -144,6 +144,7 @@ async function GetUserCountry(): Promise<string> {
 const Main = () => {
   const fromAddressRef = useRef("");
   const userCountryRef = useRef("");
+  const [numOfDestinations, setNumOfDestinations] = useState(0);
 
   React.useEffect(() => {
     const fetchUserCountry = async () => {
@@ -155,6 +156,7 @@ const Main = () => {
 
   const Row = () => {
     const destinationRef = useRef("");
+
     // const [destination, setDestination] = useState("");
     const [getDistance, { loading, /*error,*/ data }] = useLazyQuery(
       GET_DISTANCE
@@ -214,6 +216,8 @@ const Main = () => {
     );
   };
 
+  const rows = Array(numOfDestinations).fill(<Row />);
+
   return (
     <AppWrapper>
       <HeadingWrapper>
@@ -238,11 +242,11 @@ const Main = () => {
                 <HeaderColumn>Distance</HeaderColumn>
               </HeaderRow>
             </Header>
-            <Body>
-              <Row />
-              <Row />
-            </Body>
+            <Body>{rows}</Body>
           </Table>
+          <button onClick={() => setNumOfDestinations(numOfDestinations + 1)}>
+            Add
+          </button>
         </LeftSectionWrapper>
       </BodyWrapper>
     </AppWrapper>
