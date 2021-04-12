@@ -10,6 +10,8 @@ import Button from "../../components/button";
 // services
 import { GET_DISTANCE } from "../../graphql/queries";
 import axios from "axios";
+import Table, { ColumnDefinitionType } from "../../components/table/table";
+import { Distance } from "../../types/distance";
 
 // import GetUserCountry from "../../services/user-location";
 
@@ -98,20 +100,6 @@ const ButtonWrapper = styled.div`
   }
 `;
 
-const Table = styled.table``;
-
-const Header = styled.thead``;
-
-const HeaderRow = styled.tr``;
-
-const HeaderColumn = styled.th``;
-
-const Body = styled.tbody``;
-
-const RowWrapper = styled.tr``;
-
-const Cell = styled.td``;
-
 // todo: move to helper file
 const FormatTime = (timeInSeconds: number) => {
   if (!timeInSeconds) return;
@@ -141,10 +129,31 @@ async function GetUserCountry(): Promise<string> {
   return "";
 }
 
+const distanceColumns: ColumnDefinitionType<Distance, keyof Distance>[] = [
+  {
+    key: "destination",
+    header: "Name",
+    width: 150,
+  },
+  {
+    key: "travelTime",
+    header: "Travel Time",
+  },
+  {
+    key: "distance",
+    header: "Distance",
+  },
+];
+
 const Main = () => {
   const fromAddressRef = useRef("");
+  const [toAddress, setToAddress] = useState("");
   const userCountryRef = useRef("");
-  const [numOfDestinations, setNumOfDestinations] = useState(0);
+  var [destinations, setDestinations] = useState<Distance[]>([]);
+
+  //   const [getDistance, { loading, /*error,*/ data }] = useLazyQuery(
+  //   GET_DISTANCE
+  // );
 
   React.useEffect(() => {
     const fetchUserCountry = async () => {
@@ -153,70 +162,6 @@ const Main = () => {
     };
     fetchUserCountry();
   }, []);
-
-  const Row = () => {
-    const destinationRef = useRef("");
-
-    // const [destination, setDestination] = useState("");
-    const [getDistance, { loading, /*error,*/ data }] = useLazyQuery(
-      GET_DISTANCE
-    );
-
-    const onSubmitHandler = () => {
-      var fromAddressPlusCountry = `${fromAddressRef.current}, ${userCountryRef.current}`;
-      var toAddressPlusCountry = `${destinationRef.current}, ${userCountryRef.current}`;
-      console.log(fromAddressPlusCountry);
-      getDistance({
-        variables: {
-          fromAddress: fromAddressPlusCountry,
-          toAddress: toAddressPlusCountry,
-        },
-      });
-    };
-
-    return (
-      <RowWrapper>
-        <Cell>
-          <TextField
-            onChangeHandler={(event) => {
-              destinationRef.current = event.target.value;
-            }}
-            onKeyPressHandler={(event) => {
-              if (event.key === "Enter") {
-                onSubmitHandler();
-                // todo: clear to addy
-              }
-            }}
-            placeholderText={"To"}
-            buttonText={"+"}
-            onButtonClickHandler={() => {
-              onSubmitHandler();
-              // setDestinationAddresses(
-              //   destinationAddresses.concat({
-              //     destination: toAddress,
-              //     travelTime: 100,
-              //     distance: 100,
-              //   })
-              // );
-            }}
-          />
-        </Cell>
-        <Cell>
-          {loading && "loading"}
-          {data && FormatTime(parseInt(data.distance.travelTime))}
-          {!loading && !data && "?"}
-        </Cell>
-        <Cell>
-          {" "}
-          {loading && "loading"}
-          {data && FormatDistance(parseInt(data.distance.distanceMeters))}
-          {!loading && !data && "?"}
-        </Cell>
-      </RowWrapper>
-    );
-  };
-
-  const rows = Array(numOfDestinations).fill(<Row />);
 
   return (
     <AppWrapper>
@@ -232,21 +177,32 @@ const Main = () => {
               }}
               placeholderText={"From"}
             />
+            <TextField
+              value={toAddress}
+              onChangeHandler={(event) => {
+                setToAddress(event.target.value);
+              }}
+              placeholderText={"To"}
+              onButtonClickHandler={() => {
+                destinations = destinations.concat({
+                  destination: toAddress,
+                  travelTime: undefined,
+                  distance: undefined,
+                });
+                setDestinations(destinations);
+                setToAddress("");
+              }}
+              buttonText={"+"}
+            />
           </DirectionsFormWrapper>
-          {/* <DestinationMatrix></DestinationMatrix> */}
-          <Table>
-            <Header>
-              <HeaderRow>
-                <HeaderColumn>Destination</HeaderColumn>
-                <HeaderColumn>Travel Time</HeaderColumn>
-                <HeaderColumn>Distance</HeaderColumn>
-              </HeaderRow>
-            </Header>
-            <Body>{rows}</Body>
-          </Table>
-          <button onClick={() => setNumOfDestinations(numOfDestinations + 1)}>
-            Add
-          </button>
+          <Table columns={distanceColumns} data={destinations} />
+          <Button
+            onClickHandler={() => {
+              // todo: update server to take a list of destinations, and get travel time and distance for all
+            }}
+          >
+            Get Distances
+          </Button>
         </LeftSectionWrapper>
       </BodyWrapper>
     </AppWrapper>
