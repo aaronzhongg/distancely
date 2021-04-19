@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
@@ -21,25 +22,36 @@ namespace Infrastructure.DistanceCalculator
             _googleOptions = googleOptions;
         }
 
-        public async Task<Domain.Distance> GetDistanceAsync(string fromAddress, string toAddress)
+        public async Task<IReadOnlyCollection<Domain.Distance>> GetDistancesAsync(string fromAddress, params string[] destinationAddresses)
         {
             var httpClient = _clientFactory.CreateClient();
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://maps.googleapis.com/maps/api/distancematrix/json?origins={Uri.EscapeDataString(fromAddress)}&destinations={Uri.EscapeDataString(toAddress)}&key={_googleOptions.CurrentValue.ApiKey}");
+            var request = new HttpRequestMessage(HttpMethod.Get, ConstructGoogleApiUriString(fromAddress, destinationAddresses));
             var response = await httpClient.SendAsync(request);
 
+            // todo: handle non success response codes
             var responseString = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }; // todo: set global prop case insensitive 
 
             var googleDistanceResponse = JsonSerializer.Deserialize<GoogleDistanceResponse>(responseString, options);
 
-            var distance = googleDistanceResponse.Rows.First().Elements.First();
+            // Single row because only one fromAddress
+            var distances = googleDistanceResponse.Rows.First()
+                .Elements.Select(
+                    dest => new Domain.Distance(distanceMeters: dest.Distance.Value, travelTime: dest.Duration.Value))
+                .ToList();
 
-            return new Domain.Distance
-            {
-                DistanceMeters = distance.Distance.Value,
-                TravelTime = distance.Duration.Value
-            };
+            return distances;
+        }
+
+        private string ConstructGoogleApiUriString(string fromAddress, params string[] destinationAddresses) 
+        {
+            var uriEscapedDestinationAddresses = destinationAddresses.Select(d => Uri.EscapeDataString(d));
+            var baseUri = "https://maps.googleapis.com";
+            var route = "maps/api/distancematrix/json";
+            var parameters = $"origins={Uri.EscapeDataString(fromAddress)}&destinations={string.Join('|', uriEscapedDestinationAddresses)}&key={_googleOptions.CurrentValue.ApiKey}";
+
+            return $"{baseUri}/{route}/{parameters}";
         }
     }
 }

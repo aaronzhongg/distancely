@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Application.Services;
 using Domain;
@@ -17,11 +18,11 @@ namespace Application.UseCases.CalculateDistanceTo
             _outputPort = new CalculateDistanceToPresenter();
         }
 
-        public async Task Execute(string fromAddress, string toAddress)
+        public async Task Execute(string fromAddress, params string[] destinationAddresses)
         {
-            var distance = await _distanceCalculator.GetDistanceAsync(fromAddress, toAddress);
+            var distance = await _distanceCalculator.GetDistancesAsync(fromAddress, destinationAddresses);
 
-            _outputPort.Ok(distance);
+            _outputPort.Ok(distance.ToArray());
 
             return;
         }

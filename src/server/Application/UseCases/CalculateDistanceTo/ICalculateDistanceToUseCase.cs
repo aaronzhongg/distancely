@@ -9,7 +9,7 @@ namespace Application.UseCases.CalculateDistanceTo
         ///     Executes the Use Case
         /// </summary>
         /// <param name="accountId">Account Id.</param>
-        Task Execute(string fromAddress, string toAddress);
+        Task Execute(string fromAddress, params string[] destinationAddresses);
 
         /// <summary>
         ///     Executes the Use Case.

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Application.UseCases.CalculateDistanceTo;
 using Domain;
 using Microsoft.AspNetCore.Mvc;
@@ -20,13 +21,15 @@ namespace API.Controllers
             _calculateDistanceToPresenter = new CalculateDistanceToPresenter();
         }
 
+
+        // todo: fix params binding - use request body?
         [HttpGet]
-        public async Task<Distance> GetAsync([FromServices] ICalculateDistanceToUseCase useCase, string fromAddress, string toAddress)
+        public async Task<IReadOnlyCollection<Distance>> GetAsync([FromServices] ICalculateDistanceToUseCase useCase, string fromAddress, params string[] destinationAddresses)
         {
             useCase.SetOutputPort(_calculateDistanceToPresenter);
-            await useCase.Execute(fromAddress,toAddress);
+            await useCase.Execute(fromAddress,destinationAddresses);
 
-            return _calculateDistanceToPresenter.Distance;
+            return _calculateDistanceToPresenter.Distances;
         }
     }
 }

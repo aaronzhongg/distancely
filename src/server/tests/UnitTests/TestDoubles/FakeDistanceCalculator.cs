@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Application.Services;
 using Domain;
@@ -11,14 +13,11 @@ namespace UnitTests.TestDoubles
         {
         }
 
-        // todo: how to fake APIs effectively? i.e. return results based on different inputs
-        public Task<Distance> GetDistanceAsync(string fromAddress, string toAddress)
+        public Task<IReadOnlyCollection<Distance>> GetDistancesAsync(string fromAddress, params string[] destinationAddresses)
         {
-            return Task.FromResult(new Distance
-            {
-                DistanceMeters = 1,
-                TravelTime = 1.2
-            });
+            var ran = new Random();
+
+            return Task.FromResult((IReadOnlyCollection<Distance>)destinationAddresses.Select(dest => new Distance(ran.Next(), ran.NextDouble())).ToList());
         }
     }
 }

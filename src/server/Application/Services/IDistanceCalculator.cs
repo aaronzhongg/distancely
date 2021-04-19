@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Domain;
 
@@ -6,6 +7,6 @@ namespace Application.Services
 {
     public interface IDistanceCalculator
     {
-        Task<Distance> GetDistanceAsync(string fromAddress, string toAddress);
+        Task<IReadOnlyCollection<Domain.Distance>> GetDistancesAsync(string fromAddress, params string[] destinationAddresses);
     }
 }
