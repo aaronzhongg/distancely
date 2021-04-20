@@ -15,8 +15,8 @@ namespace GraphQL.Common.Queries
         {
             _presenter = new CalculateDistanceToPresenter();
 
-            FieldAsync<DistanceType>(
-              "distance",
+            FieldAsync<ListGraphType<DistanceType>>(
+              "distances", // todo: distances?
               arguments: new QueryArguments(
                   new QueryArgument<StringGraphType> { Name = "fromAddress" },  // todo: how to clean this up i.e. Input classes? - make strongly typed
                   new QueryArgument<ListGraphType<StringGraphType>> { Name = "destinationAddresses" }),

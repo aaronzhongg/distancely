@@ -51,7 +51,7 @@ namespace Infrastructure.DistanceCalculator
             var route = "maps/api/distancematrix/json";
             var parameters = $"origins={Uri.EscapeDataString(fromAddress)}&destinations={string.Join('|', uriEscapedDestinationAddresses)}&key={_googleOptions.CurrentValue.ApiKey}";
 
-            return $"{baseUri}/{route}/{parameters}";
+            return $"{baseUri}/{route}?{parameters}";
         }
     }
 }
