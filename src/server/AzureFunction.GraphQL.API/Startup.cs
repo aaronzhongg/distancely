@@ -21,8 +21,9 @@ namespace AzureFunction.GraphQL.API
         public override void Configure(IFunctionsHostBuilder builder)
         {
             // todo: implicitly register types
-            builder.Services.AddScoped<DistanceQuery>();
-            builder.Services.AddScoped<DistanceType>();
+            builder.Services.AddScoped<DestinationsQuery>();
+            builder.Services.AddScoped<DestinationType>();
+            builder.Services.AddScoped<PlaceType>();
             builder.Services.AddScoped<DistanceInput>();
             builder.Services.AddScoped<ISchema, DistancelySchema>();
 

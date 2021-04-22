@@ -10,7 +10,7 @@ namespace GraphQL
         public DistancelySchema(IServiceProvider provider)
             : base(provider)
         {
-            Query = provider.GetRequiredService<DistanceQuery>();
+            Query = provider.GetRequiredService<DestinationsQuery>();
             // Mutation = provider.GetRequiredService<StarWarsMutation>();
         }
     }

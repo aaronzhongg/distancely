@@ -6,17 +6,17 @@ using GraphQL.Types;
 
 namespace GraphQL.Common.Queries
 {
-    public class DistanceQuery : ObjectGraphType
+    public class DestinationsQuery : ObjectGraphType
     {
         private readonly CalculateDistanceToPresenter _presenter;
 
         // todo: Input types
-        public DistanceQuery(ICalculateDistanceToUseCase calculateDistanceToUseCase)
+        public DestinationsQuery(ICalculateDistanceToUseCase calculateDistanceToUseCase)
         {
             _presenter = new CalculateDistanceToPresenter();
 
-            FieldAsync<ListGraphType<DistanceType>>(
-              "distances", // todo: distances?
+            FieldAsync<ListGraphType<DestinationType>>(
+              "destinations",
               arguments: new QueryArguments(
                   new QueryArgument<StringGraphType> { Name = "fromAddress" },  // todo: how to clean this up i.e. Input classes? - make strongly typed
                   new QueryArgument<ListGraphType<StringGraphType>> { Name = "destinationAddresses" }),

@@ -12,6 +12,6 @@ namespace Application.UseCases.CalculateDistanceTo
         /// <summary>
         ///     Calculated distances 
         /// </summary>
-        void Ok(params Distance[] distance);
+        void Ok(params Destination[] distance);
     }
 }

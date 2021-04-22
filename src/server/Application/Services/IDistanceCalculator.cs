@@ -7,6 +7,6 @@ namespace Application.Services
 {
     public interface IDistanceCalculator
     {
-        Task<IReadOnlyCollection<Domain.Distance>> GetDistancesAsync(string fromAddress, params string[] destinationAddresses);
+        Task<IReadOnlyCollection<Domain.Destination>> GetDistancesAsync(string fromAddress, params string[] destinationAddresses);
     }
 }

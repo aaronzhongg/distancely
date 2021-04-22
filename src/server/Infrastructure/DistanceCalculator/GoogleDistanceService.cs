@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Application.Services;
+using Domain;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 
@@ -22,7 +23,7 @@ namespace Infrastructure.DistanceCalculator
             _googleOptions = googleOptions;
         }
 
-        public async Task<IReadOnlyCollection<Domain.Distance>> GetDistancesAsync(string fromAddress, params string[] destinationAddresses)
+        public async Task<IReadOnlyCollection<Domain.Destination>> GetDistancesAsync(string fromAddress, params string[] destinationAddresses)
         {
             var httpClient = _clientFactory.CreateClient();
 
@@ -36,13 +37,17 @@ namespace Infrastructure.DistanceCalculator
             var googleDistanceResponse = JsonSerializer.Deserialize<GoogleDistanceResponse>(responseString, options);
 
             // Single row because only one fromAddress
-            var distances = googleDistanceResponse.Rows.First()
-                .Elements.Select(
-                    dest => new Domain.Distance(distanceMeters: dest.Distance.Value, travelTime: dest.Duration.Value))
+            var distances = googleDistanceResponse.Rows[0].Elements.Select(
+                    (dest, index) => {
+                        if (dest.Status == "OK") return new Domain.Destination(place: new Place(destinationAddresses[index]), distanceMeters: dest.Distance.Value, travelTime: dest.Duration.Value);
+
+                        return null;
+                    })
                 .ToList();
 
             return distances;
         }
+        //	Status	"ZERO_RESULTS"	string
 
         private string ConstructGoogleApiUriString(string fromAddress, params string[] destinationAddresses) 
         {

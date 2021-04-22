@@ -24,7 +24,7 @@ namespace API.Controllers
 
         // todo: fix params binding - use request body?
         [HttpGet]
-        public async Task<IReadOnlyCollection<Distance>> GetAsync([FromServices] ICalculateDistanceToUseCase useCase, string fromAddress, params string[] destinationAddresses)
+        public async Task<IReadOnlyCollection<Destination>> GetAsync([FromServices] ICalculateDistanceToUseCase useCase, string fromAddress, params string[] destinationAddresses)
         {
             useCase.SetOutputPort(_calculateDistanceToPresenter);
             await useCase.Execute(fromAddress,destinationAddresses);

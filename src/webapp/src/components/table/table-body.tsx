@@ -5,7 +5,9 @@ const TableBody = styled.tbody``;
 
 const Row = styled.tr``;
 
-const Cell = styled.td``;
+const Cell = styled.td`
+  text-transform: capitalize;
+`;
 
 export type TableRowsProps<T, K extends keyof T> = {
   data: Array<T>;
@@ -26,7 +28,8 @@ const TableRows = <T, K extends keyof T>({
         {columns.map((column, index2) => {
           return (
             <Cell key={`cell-${index2}`} style={style}>
-              {row[column.key]}
+              {column.format && column.format(row[column.key])}
+              {column.format || row[column.key]}
             </Cell>
           );
         })}

@@ -13,11 +13,11 @@ namespace UnitTests.TestDoubles
         {
         }
 
-        public Task<IReadOnlyCollection<Distance>> GetDistancesAsync(string fromAddress, params string[] destinationAddresses)
+        public Task<IReadOnlyCollection<Destination>> GetDistancesAsync(string fromAddress, params string[] destinationAddresses)
         {
             var ran = new Random();
 
-            return Task.FromResult((IReadOnlyCollection<Distance>)destinationAddresses.Select(dest => new Distance(ran.Next(), ran.NextDouble())).ToList());
+            return Task.FromResult((IReadOnlyCollection<Destination>)destinationAddresses.Select(dest => new Destination(new Place("dummy address"), ran.Next(), ran.NextDouble())).ToList());
         }
     }
 }

@@ -8,12 +8,22 @@ import TextField from "../../components/text-field";
 import Button from "../../components/button";
 
 // services
-import { GET_DISTANCE } from "../../graphql/queries";
+import { GET_DISTANCES } from "../../graphql/queries";
 import axios from "axios";
 import Table, { ColumnDefinitionType } from "../../components/table/table";
 import { Distance } from "../../types/distance";
 
 // import GetUserCountry from "../../services/user-location";
+
+type DistanceType = {
+  place: PlaceType;
+  travelTime: number;
+  distanceMeters: number;
+};
+
+type PlaceType = {
+  address: string;
+};
 
 const AppWrapper = styled.div`
   display: flex;
@@ -100,9 +110,13 @@ const ButtonWrapper = styled.div`
   }
 `;
 
+const TableWrapper = styled.div`
+  margin: 20px;
+`;
+
 // todo: move to helper file
 const FormatTime = (timeInSeconds: number) => {
-  if (!timeInSeconds) return;
+  if (!timeInSeconds) return `?`;
 
   if (timeInSeconds < 60) return `${Math.round(timeInSeconds)} seconds`;
 
@@ -112,7 +126,7 @@ const FormatTime = (timeInSeconds: number) => {
 };
 
 const FormatDistance = (distanceInMeters: number) => {
-  if (!distanceInMeters) return;
+  if (!distanceInMeters) return `?`;
 
   if (distanceInMeters < 100) return `${Math.round(distanceInMeters)} meters`;
 
@@ -133,27 +147,30 @@ const distanceColumns: ColumnDefinitionType<Distance, keyof Distance>[] = [
   {
     key: "destination",
     header: "Name",
-    width: 150,
+    width: 280,
   },
   {
     key: "travelTime",
     header: "Travel Time",
+    format: (value) => FormatTime(value as number),
   },
   {
     key: "distance",
     header: "Distance",
+    format: (value) => FormatDistance(value as number),
   },
 ];
 
+// todo: load destination travel times on add
 const Main = () => {
   const fromAddressRef = useRef("");
   const [toAddress, setToAddress] = useState("");
   const userCountryRef = useRef("");
   var [destinations, setDestinations] = useState<Distance[]>([]);
 
-  //   const [getDistance, { loading, /*error,*/ data }] = useLazyQuery(
-  //   GET_DISTANCE
-  // );
+  const [getDistances, { loading, /*error,*/ data }] = useLazyQuery(
+    GET_DISTANCES
+  );
 
   React.useEffect(() => {
     const fetchUserCountry = async () => {
@@ -162,6 +179,34 @@ const Main = () => {
     };
     fetchUserCountry();
   }, []);
+
+  if (data) {
+    console.log(data);
+    console.log(data.destinations);
+
+    var resultDestinations = data.destinations as [DistanceType];
+    destinations.map((dest) => {
+      var destinationDistance = resultDestinations.find((d) => {
+        return d && d.place.address == dest.destination;
+      }) as DistanceType;
+
+      if (!destinationDistance) return;
+      dest.distance = destinationDistance.distanceMeters;
+      dest.travelTime = destinationDistance.travelTime;
+    });
+  }
+
+  const addDestinationAddressHandler = () => {
+    if (!toAddress) return;
+
+    destinations = destinations.concat({
+      destination: `${toAddress}, ${userCountryRef.current}`,
+      travelTime: undefined,
+      distance: undefined,
+    });
+    setDestinations(destinations);
+    setToAddress("");
+  };
 
   return (
     <AppWrapper>
@@ -179,29 +224,34 @@ const Main = () => {
             />
             <TextField
               value={toAddress}
+              onKeyPressHandler={(event) => {
+                if (event.key === "Enter") addDestinationAddressHandler();
+              }}
               onChangeHandler={(event) => {
                 setToAddress(event.target.value);
               }}
               placeholderText={"To"}
               onButtonClickHandler={() => {
-                destinations = destinations.concat({
-                  destination: toAddress,
-                  travelTime: undefined,
-                  distance: undefined,
-                });
-                setDestinations(destinations);
-                setToAddress("");
+                addDestinationAddressHandler();
               }}
               buttonText={"+"}
             />
           </DirectionsFormWrapper>
-          <Table columns={distanceColumns} data={destinations} />
+          <TableWrapper>
+            <Table columns={distanceColumns} data={destinations} />
+          </TableWrapper>
           <Button
             onClickHandler={() => {
               // todo: update server to take a list of destinations, and get travel time and distance for all
+              getDistances({
+                variables: {
+                  fromAddress: fromAddressRef.current,
+                  destinationAddresses: destinations.map((d) => d.destination),
+                },
+              });
             }}
           >
-            Get Distances
+            {loading ? "loading..." : "Get Distances"}
           </Button>
         </LeftSectionWrapper>
       </BodyWrapper>

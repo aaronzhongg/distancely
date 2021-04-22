@@ -1,8 +1,14 @@
 import gql from "graphql-tag";
 
-export const GET_DISTANCE = gql`
-  query Distance($fromAddress: String!, $toAddress: String!) {
-    distance(fromAddress: $fromAddress, toAddress: $toAddress) {
+export const GET_DISTANCES = gql`
+  query Destinations($fromAddress: String!, $destinationAddresses: [String!]) {
+    destinations(
+      fromAddress: $fromAddress
+      destinationAddresses: $destinationAddresses
+    ) {
+      place {
+        address
+      }
       distanceMeters
       travelTime
     }

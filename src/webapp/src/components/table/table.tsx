@@ -4,10 +4,12 @@ import TableHeader from "./table-header";
 
 const TableWrapper = styled.table``;
 
+// todo: replace with react-table when v8 with ts support is released (sometime in 2021?)
 export type ColumnDefinitionType<T, K extends keyof T> = {
   key: K;
   header: string;
   width?: number;
+  format?: (value: T[K]) => any;
 };
 
 export type TableProps<T, K extends keyof T> = {
