@@ -147,7 +147,7 @@ const distanceColumns: ColumnDefinitionType<Distance, keyof Distance>[] = [
   {
     key: "destination",
     header: "Name",
-    width: 280,
+    width: 250,
   },
   {
     key: "travelTime",
@@ -187,7 +187,7 @@ const Main = () => {
     var resultDestinations = data.destinations as [DistanceType];
     destinations.map((dest) => {
       var destinationDistance = resultDestinations.find((d) => {
-        return d && d.place.address == dest.destination;
+        return d && d.place.address.startsWith(dest.destination);
       }) as DistanceType;
 
       if (!destinationDistance) return;
@@ -200,7 +200,7 @@ const Main = () => {
     if (!toAddress) return;
 
     destinations = destinations.concat({
-      destination: `${toAddress}, ${userCountryRef.current}`,
+      destination: toAddress,
       travelTime: undefined,
       distance: undefined,
     });
@@ -245,8 +245,10 @@ const Main = () => {
               // todo: update server to take a list of destinations, and get travel time and distance for all
               getDistances({
                 variables: {
-                  fromAddress: fromAddressRef.current,
-                  destinationAddresses: destinations.map((d) => d.destination),
+                  fromAddress: `${fromAddressRef.current}, ${userCountryRef.current}`,
+                  destinationAddresses: destinations.map(
+                    (d) => `${d.destination}, ${userCountryRef.current}`
+                  ),
                 },
               });
             }}
