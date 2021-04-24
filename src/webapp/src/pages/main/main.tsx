@@ -119,7 +119,7 @@ async function GetUserCountry(): Promise<string> {
 const distanceColumns: ColumnDefinitionType<Distance, keyof Distance>[] = [
   {
     key: "destination",
-    header: "Name",
+    header: "Destinations",
     width: 250,
   },
   {
@@ -179,6 +179,15 @@ const Main = () => {
     });
     setDestinations(destinations);
     setToAddress("");
+
+    getDistances({
+      variables: {
+        fromAddress: `${fromAddressRef.current}, ${userCountryRef.current}`,
+        destinationAddresses: destinations.map(
+          (d) => `${d.destination}, ${userCountryRef.current}`
+        ),
+      },
+    });
   };
 
   return (
@@ -213,9 +222,13 @@ const Main = () => {
             />
           </DirectionsFormWrapper>
           <TableWrapper>
-            <Table columns={distanceColumns} data={destinations} />
+            <Table
+              columns={distanceColumns}
+              data={destinations}
+              noDataText={"Add some addresses to get travel times 🏎 💨"}
+            />
           </TableWrapper>
-          <Button
+          {/* <Button
             onClickHandler={() => {
               // todo: update server to take a list of destinations, and get travel time and distance for all
               getDistances({
@@ -229,7 +242,7 @@ const Main = () => {
             }}
           >
             {loading ? "loading..." : "Get Distances"}
-          </Button>
+          </Button> */}
         </LeftSectionWrapper>
       </BodyWrapper>
     </AppWrapper>

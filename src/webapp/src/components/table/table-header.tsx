@@ -6,9 +6,10 @@ const Header = styled.thead``;
 const Row = styled.tr``;
 
 const HeaderColumn = styled.th`
-  // padding-top: 12px;
-  // padding-bottom: 12px;
-  // text-align: left;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  font-weight: 500;
+  text-align: left;
   // background-color: #4caf50;
   // color: white;
 `;
