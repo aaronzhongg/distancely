@@ -40,21 +40,22 @@ const HeadingWrapper = styled.div`
   align-items: center;
   justify-content: center;
 
-  @media ${device.min_sm} {
-    position: fixed;
-  }
+  // @media ${device.sm_and_larger} {
+  //   position: fixed;
+  // }
 `;
 
 const Title = styled.p`
   font-size: 48px;
   font-weight: 700;
   letter-spacing: -2px;
+  margin: 24px 0px;
 `;
 
 const BodyWrapper = styled.div`
   flex: 9;
   display: flex;
-  @media ${device.max_sm} {
+  @media ${device.sm_and_smaller} {
     flex-direction: column;
   }
 `;
@@ -65,48 +66,20 @@ const LeftSectionWrapper = styled.div`
   // background: blue;
   flex: 1;
   align-items: center;
-  justify-content: center;
-`;
-
-const RightSectionWrapper = styled.div`
-  display: flex;
-  // background: red;
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-
-  & > * {
-    margin: 20px;
-  }
-`;
-
-const Card = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
-
-const CardText = styled.div`
-  font-size: 48px;
+  // justify-content: center;
 `;
 
 const DirectionsFormWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  width: 320px;
 
   & > * {
-    margin: 5px 15px;
+    margin: 10px 15px;
   }
-`;
 
-const ButtonWrapper = styled.div`
-  display: flex;
-  margin-top: 20px;
-
-  & > * {
-    flex-grow: 1;
+  @media ${device.sm_and_larger} {
+    width: 420px;
   }
 `;
 
@@ -220,7 +193,8 @@ const Main = () => {
               onChangeHandler={(event) => {
                 fromAddressRef.current = event.target.value;
               }}
-              placeholderText={"From"}
+              placeholderText={"From address."}
+              labelText={"Where are you coming from?"}
             />
             <TextField
               value={toAddress}
@@ -230,7 +204,8 @@ const Main = () => {
               onChangeHandler={(event) => {
                 setToAddress(event.target.value);
               }}
-              placeholderText={"To"}
+              placeholderText={"Add a destination address."}
+              labelText={"Where are you going?"}
               onButtonClickHandler={() => {
                 addDestinationAddressHandler();
               }}
