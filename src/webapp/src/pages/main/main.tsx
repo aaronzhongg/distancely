@@ -6,6 +6,7 @@ import { useLazyQuery } from "@apollo/client";
 // components
 import TextField from "../../components/text-field";
 import Button from "../../components/button";
+import spinner from "../../assets/spinner.gif";
 
 // services
 import { GET_DISTANCES } from "../../graphql/queries";
@@ -24,6 +25,8 @@ type DistanceType = {
 type PlaceType = {
   address: string;
 };
+
+const UNKNOWN = -1;
 
 const AppWrapper = styled.div`
   display: flex;
@@ -87,9 +90,15 @@ const TableWrapper = styled.div`
   margin: 20px;
 `;
 
+const Spinner = styled.img`
+  height: 20px;
+  width: 20px;
+`;
+
 // todo: move to helper file
 const FormatTime = (timeInSeconds: number) => {
-  if (!timeInSeconds) return `?`;
+  if (!timeInSeconds) return <Spinner src={spinner} alt="loading..." />;
+  if (timeInSeconds === UNKNOWN) return "?";
 
   if (timeInSeconds < 60) return `${Math.round(timeInSeconds)} seconds`;
 
@@ -99,7 +108,8 @@ const FormatTime = (timeInSeconds: number) => {
 };
 
 const FormatDistance = (distanceInMeters: number) => {
-  if (!distanceInMeters) return `?`;
+  if (!distanceInMeters) return <Spinner src={spinner} alt="loading..." />;
+  if (distanceInMeters === UNKNOWN) return "?";
 
   if (distanceInMeters < 100) return `${Math.round(distanceInMeters)} meters`;
 
@@ -142,7 +152,28 @@ const Main = () => {
   var [destinations, setDestinations] = useState<Distance[]>([]);
 
   const [getDistances, { loading, /*error,*/ data }] = useLazyQuery(
-    GET_DISTANCES
+    GET_DISTANCES,
+    {
+      onCompleted: (data) => {
+        var resultDestinations = data.destinations as [DistanceType];
+        destinations = destinations.map((dest) => {
+          var destinationDistance = resultDestinations.find((d) => {
+            return d && d.place.address.startsWith(dest.destination);
+          }) as DistanceType;
+
+          if (!destinationDistance) {
+            dest.distance = UNKNOWN;
+            dest.travelTime = UNKNOWN;
+          } else {
+            dest.distance = destinationDistance.distanceMeters;
+            dest.travelTime = destinationDistance.travelTime;
+          }
+
+          return dest;
+        });
+        setDestinations(destinations);
+      },
+    }
   );
 
   React.useEffect(() => {
@@ -152,22 +183,6 @@ const Main = () => {
     };
     fetchUserCountry();
   }, []);
-
-  if (data) {
-    console.log(data);
-    console.log(data.destinations);
-
-    var resultDestinations = data.destinations as [DistanceType];
-    destinations.map((dest) => {
-      var destinationDistance = resultDestinations.find((d) => {
-        return d && d.place.address.startsWith(dest.destination);
-      }) as DistanceType;
-
-      if (!destinationDistance) return;
-      dest.distance = destinationDistance.distanceMeters;
-      dest.travelTime = destinationDistance.travelTime;
-    });
-  }
 
   const addDestinationAddressHandler = () => {
     if (!toAddress) return;
@@ -235,21 +250,6 @@ const Main = () => {
               noDataText={"Add some addresses to get travel times 🏎 💨"}
             />
           </TableWrapper>
-          {/* <Button
-            onClickHandler={() => {
-              // todo: update server to take a list of destinations, and get travel time and distance for all
-              getDistances({
-                variables: {
-                  fromAddress: `${fromAddressRef.current}, ${userCountryRef.current}`,
-                  destinationAddresses: destinations.map(
-                    (d) => `${d.destination}, ${userCountryRef.current}`
-                  ),
-                },
-              });
-            }}
-          >
-            {loading ? "loading..." : "Get Distances"}
-          </Button> */}
         </LeftSectionWrapper>
       </BodyWrapper>
     </AppWrapper>
