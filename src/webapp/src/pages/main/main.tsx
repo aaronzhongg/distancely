@@ -180,6 +180,10 @@ const Main = () => {
     setDestinations(destinations);
     setToAddress("");
 
+    updateDestinationTravelTimes();
+  };
+
+  const updateDestinationTravelTimes = () => {
     getDistances({
       variables: {
         fromAddress: `${fromAddressRef.current}, ${userCountryRef.current}`,
@@ -201,6 +205,9 @@ const Main = () => {
             <TextField
               onChangeHandler={(event) => {
                 fromAddressRef.current = event.target.value;
+              }}
+              onKeyPressHandler={(event) => {
+                if (event.key === "Enter") updateDestinationTravelTimes();
               }}
               placeholderText={"From address."}
               labelText={"Where are you coming from?"}
