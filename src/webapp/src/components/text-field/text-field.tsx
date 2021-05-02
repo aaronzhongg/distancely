@@ -7,6 +7,7 @@ const InputWrapper = styled.div`
   flex-direction: column;
   margin-top: 5px;
   margin-bottom: 5px;
+  flex-grow: 1;
 `;
 
 const InputLabel = styled.label`
@@ -68,12 +69,15 @@ const IconButton = styled.button`
 `;
 
 export interface TextFieldProps {
+  style?: React.CSSProperties;
   // text field
   onChangeHandler?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onKeyPressHandler?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+  onKeyDownHandler?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   placeholderText?: string;
   value?: string;
   labelText?: string;
+  disabled?: boolean;
 
   // button
   onButtonClickHandler?: React.MouseEventHandler<HTMLButtonElement>;
@@ -81,26 +85,31 @@ export interface TextFieldProps {
 }
 
 const TextField = ({
+  style,
   // text field
   onChangeHandler,
   onKeyPressHandler,
+  onKeyDownHandler,
   placeholderText,
   value,
   labelText,
+  disabled,
 
   // button
   onButtonClickHandler,
   buttonText,
 }: TextFieldProps) => {
   return (
-    <InputWrapper>
+    <InputWrapper style={style}>
       <InputLabel>{labelText}</InputLabel>
       <InputFieldWrapper>
         <Input
           onChange={onChangeHandler}
           onKeyPress={onKeyPressHandler}
+          onKeyDown={onKeyDownHandler}
           placeholder={placeholderText}
           value={value}
+          disabled={disabled}
         />
         {buttonText && (
           <IconButton onClick={onButtonClickHandler}>{buttonText}</IconButton>

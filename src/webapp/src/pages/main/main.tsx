@@ -4,8 +4,6 @@ import { device } from "../../breakpoints";
 import { useLazyQuery } from "@apollo/client";
 
 // components
-import TextField from "../../components/text-field";
-import Button from "../../components/button";
 import spinner from "../../assets/spinner.gif";
 
 // services
@@ -13,6 +11,7 @@ import { GET_DISTANCES } from "../../graphql/queries";
 import axios from "axios";
 import Table, { ColumnDefinitionType } from "../../components/table/table";
 import { Distance } from "../../types/distance";
+import PlacesAutocomplete from "../../components/places-autocomplete";
 
 // import GetUserCountry from "../../services/user-location";
 
@@ -24,6 +23,11 @@ type DistanceType = {
 
 type PlaceType = {
   address: string;
+};
+
+type Country = {
+  country: string;
+  countryCode: string;
 };
 
 const UNKNOWN = -1;
@@ -117,13 +121,17 @@ const FormatDistance = (distanceInMeters: number) => {
 };
 
 // todo: move to shared file
-async function GetUserCountry(): Promise<string> {
+async function GetUserCountry(): Promise<Country | null> {
   var result = await axios("https://extreme-ip-lookup.com/json/");
 
-  if (result.status === 200) return result.data.country;
+  if (result.status === 200)
+    return {
+      country: result.data.country,
+      countryCode: result.data.countryCode,
+    };
 
   console.log("Cannot retrieve country");
-  return "";
+  return null;
 }
 
 const distanceColumns: ColumnDefinitionType<Distance, keyof Distance>[] = [
@@ -148,7 +156,8 @@ const distanceColumns: ColumnDefinitionType<Distance, keyof Distance>[] = [
 const Main = () => {
   const fromAddressRef = useRef("");
   const [toAddress, setToAddress] = useState("");
-  const userCountryRef = useRef("");
+  const userCountryRef = useRef<Country | null>(null);
+  const [userCountry, setUserCountry] = useState<Country | null>(null);
   var [destinations, setDestinations] = useState<Distance[]>([]);
 
   const [getDistances, { loading, /*error,*/ data }] = useLazyQuery(
@@ -178,8 +187,7 @@ const Main = () => {
 
   React.useEffect(() => {
     const fetchUserCountry = async () => {
-      var userCountry = await GetUserCountry();
-      userCountryRef.current = userCountry;
+      setUserCountry(await GetUserCountry());
     };
     fetchUserCountry();
   }, []);
@@ -201,9 +209,9 @@ const Main = () => {
   const updateDestinationTravelTimes = () => {
     getDistances({
       variables: {
-        fromAddress: `${fromAddressRef.current}, ${userCountryRef.current}`,
+        fromAddress: `${fromAddressRef.current}, ${userCountry?.country}`,
         destinationAddresses: destinations.map(
-          (d) => `${d.destination}, ${userCountryRef.current}`
+          (d) => `${d.destination}, ${userCountry?.country}`
         ),
       },
     });
@@ -217,19 +225,26 @@ const Main = () => {
       <BodyWrapper>
         <LeftSectionWrapper>
           <DirectionsFormWrapper>
-            <TextField
+            <PlacesAutocomplete
+              setValue={(val) => {
+                fromAddressRef.current = val;
+              }}
+              country={userCountry?.countryCode}
               onChangeHandler={(event) => {
                 fromAddressRef.current = event.target.value;
               }}
-              onKeyPressHandler={(event) => {
+              onSelectHandler={updateDestinationTravelTimes}
+              onKeyDownHandler={(event) => {
                 if (event.key === "Enter") updateDestinationTravelTimes();
               }}
               placeholderText={"From address."}
               labelText={"Where are you coming from?"}
             />
-            <TextField
+            <PlacesAutocomplete
+              setValue={setToAddress}
+              country={userCountry?.countryCode}
               value={toAddress}
-              onKeyPressHandler={(event) => {
+              onKeyDownHandler={(event) => {
                 if (event.key === "Enter") addDestinationAddressHandler();
               }}
               onChangeHandler={(event) => {
@@ -241,13 +256,14 @@ const Main = () => {
                 addDestinationAddressHandler();
               }}
               buttonText={"+"}
+              clearOnEnterKeyPress={true}
             />
           </DirectionsFormWrapper>
           <TableWrapper>
             <Table
               columns={distanceColumns}
               data={destinations}
-              noDataText={"Add some addresses to get travel times 🏎 💨"}
+              noDataText={"Add some addresses to get travel times 🚗💨"}
             />
           </TableWrapper>
         </LeftSectionWrapper>
