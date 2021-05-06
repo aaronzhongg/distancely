@@ -15,6 +15,8 @@ import PlacesAutocomplete from "../../components/places-autocomplete";
 
 // import GetUserCountry from "../../services/user-location";
 
+import mixpanel from "mixpanel-browser";
+
 type DistanceType = {
   place: PlaceType;
   travelTime: number;
@@ -186,6 +188,7 @@ const Main = () => {
   );
 
   React.useEffect(() => {
+    mixpanel.track("Page Visit");
     const fetchUserCountry = async () => {
       setUserCountry(await GetUserCountry());
     };
@@ -194,6 +197,8 @@ const Main = () => {
 
   const addDestinationAddressHandler = () => {
     if (!toAddress) return;
+
+    mixpanel.track("Destination Added", { Address: toAddress });
 
     destinations = destinations.concat({
       destination: toAddress,
