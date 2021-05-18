@@ -154,11 +154,10 @@ const distanceColumns: ColumnDefinitionType<Distance, keyof Distance>[] = [
   },
 ];
 
-// todo: load destination travel times on add
 const Main = () => {
   const fromAddressRef = useRef("");
+  const onToAddressSuggestionSelectedRef = useRef(true);
   const [toAddress, setToAddress] = useState("");
-  const userCountryRef = useRef<Country | null>(null);
   const [userCountry, setUserCountry] = useState<Country | null>(null);
   var [destinations, setDestinations] = useState<Distance[]>([]);
 
@@ -194,6 +193,14 @@ const Main = () => {
     };
     fetchUserCountry();
   }, []);
+
+  React.useEffect(() => {
+    if (onToAddressSuggestionSelectedRef.current) {
+      addDestinationAddressHandler();
+      onToAddressSuggestionSelectedRef.current = false;
+      setToAddress("");
+    }
+  }, [toAddress]);
 
   const addDestinationAddressHandler = () => {
     if (!toAddress) return;
@@ -255,6 +262,9 @@ const Main = () => {
               onChangeHandler={(event) => {
                 setToAddress(event.target.value);
               }}
+              onSelectHandler={() => {
+                onToAddressSuggestionSelectedRef.current = true;
+              }}
               placeholderText={"Add a destination address."}
               labelText={"Where are you going?"}
               onButtonClickHandler={() => {
@@ -262,6 +272,7 @@ const Main = () => {
               }}
               buttonText={"+"}
               clearOnEnterKeyPress={true}
+              clearOnSelect={true}
             />
           </DirectionsFormWrapper>
           <TableWrapper>

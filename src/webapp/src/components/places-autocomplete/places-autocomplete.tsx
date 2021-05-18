@@ -49,6 +49,7 @@ export interface PlacesAutocompleteProps {
   country?: string;
   setValue?: (val: string) => void;
   clearOnEnterKeyPress?: boolean;
+  clearOnSelect?: boolean;
   onSelectHandler?: () => void;
 }
 
@@ -61,6 +62,7 @@ const PlacesAutocomplete = ({
   country,
   setValue: setTextValue,
   clearOnEnterKeyPress,
+  clearOnSelect,
   onSelectHandler,
 
   // text field
@@ -105,11 +107,10 @@ const PlacesAutocomplete = ({
     cachedVal = e.target.value;
   };
 
-  const handleSelect = ({ description }: Suggestion) => () => {
+  const handleSelect = ({ description }: Suggestion) => {
     setValue(description, false);
     setTextValue && setTextValue(description);
     dismissSuggestions();
-    onSelectHandler && onSelectHandler();
   };
 
   const handleEnter = (idx: number) => () => {
@@ -153,9 +154,7 @@ const PlacesAutocomplete = ({
     setTextValue &&
       setTextValue(
         // @ts-expect-error
-        data[nextIndex] ? data[nextIndex].description : cachedVal,
-        // @ts-expect-error
-        false
+        data[nextIndex] ? data[nextIndex].description : cachedVal
       );
   };
 
@@ -170,7 +169,11 @@ const PlacesAutocomplete = ({
         <Item
           id={`sug-list-item-${idx}`}
           key={place_id}
-          onClick={handleSelect(suggestion)}
+          onClick={() => {
+            handleSelect(suggestion);
+            onSelectHandler && onSelectHandler();
+            if (clearOnSelect) setValue("");
+          }}
           onMouseEnter={handleEnter(idx)}
           active={idx === currIndex}
         >
