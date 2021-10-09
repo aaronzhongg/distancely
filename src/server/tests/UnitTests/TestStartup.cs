@@ -1,8 +1,5 @@
-﻿using System;
-using Application.Modules;
-using AutoFixture;
+﻿using AutoFixture;
 using Microsoft.Extensions.DependencyInjection;
-using UnitTests.TestDoubles;
 
 namespace UnitTests
 {
@@ -14,8 +11,7 @@ namespace UnitTests
 
         internal void CustomizeContainer(IServiceCollection collection)
         {
-            collection.RegisterUseCases()
-                .RegisterFakeInfrastructure();
+
         }
 
         internal void CustomizeSpecimens(IFixture fixture)
