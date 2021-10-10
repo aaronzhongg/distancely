@@ -10,7 +10,7 @@ import { TextFieldProps } from "../text-field/text-field";
 
 const PlacesAutocompleteWrapper = styled.div`
   display: flex;
-  flex-grow: 1;
+  // flex-grow: 1;
 `;
 
 const SuggestionList = styled.ul`

@@ -53,6 +53,7 @@ const Input = styled.input`
 `;
 
 // todo: primary / secondary
+// todo: text position left/top
 const IconButton = styled.button`
   position: absolute;
   right: 0px;
