@@ -1,7 +1,19 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
-import { Table, Tag, Space, Row, Col } from "antd";
+import { Table, Tag, Space, Row, Col, Button } from "antd";
 import "antd/dist/antd.css";
+
+const LeftSectionWidth = "120px";
+
+const AntRow = styled(Row)`
+  height: 40px;
+`;
+
+const AntCol = styled(Col)`
+  display: flex;
+  justify-content: center;
+  align-content: center;
+`;
 
 const MainWrapper = styled.div``;
 
@@ -23,10 +35,10 @@ const RenameThisOneDay = styled.div`
   background-color: darkblue;
 `;
 
-const ColumnHeader = styled.div``;
-
 const MatrixBody = styled.div`
-  width: 100%;
+  /* width: 100%; */
+  display: flex;
+  flex-grow: 1;
   background-color: darkcyan;
 `;
 
@@ -111,6 +123,15 @@ const Main2 = () => {
       tags: ["cool", "teacher"],
     },
   ];
+
+  const startAddresses = ["Address 1", "Address 2", "Address 3"];
+
+  const renderStartAddresses = () => {
+    return startAddresses.map((address) => (
+      <AntCol flex="auto">{address}</AntCol>
+    ));
+  };
+
   return (
     <MainWrapper>
       {/* Manually creating styled components */}
@@ -122,10 +143,18 @@ const Main2 = () => {
       {/* Ant Table */}
       {/* <Table columns={columns} dataSource={data} /> */}
       <MatrixWrapper>
-        <RowHeader>row header</RowHeader>
+        <RowHeader>
+          <AntRow align="middle">
+            <AntCol flex={LeftSectionWidth}>start</AntCol>
+            {renderStartAddresses()}
+            <AntCol flex={LeftSectionWidth}>
+              <Button>add start address</Button>
+            </AntCol>
+          </AntRow>
+        </RowHeader>
         <RenameThisOneDay>
-          <ColumnHeader>column header</ColumnHeader>
           <MatrixBody>
+            <AntCol flex={LeftSectionWidth}>Column header</AntCol>
             <Row>
               <Col span={24}>col</Col>
             </Row>
