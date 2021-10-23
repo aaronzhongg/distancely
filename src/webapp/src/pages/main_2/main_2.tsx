@@ -1,6 +1,6 @@
-import React, { useRef, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
-import { Table, Tag, Space, Row, Col, Button } from "antd";
+import { Tag, Space, Row, Col, Button, Popover, AutoComplete } from "antd";
 import "antd/dist/antd.css";
 
 const LeftSectionWidth = "120px";
@@ -124,7 +124,19 @@ const Main2 = () => {
     },
   ];
 
+  const options = [
+    { value: "Burns Bay Road" },
+    { value: "Downing Street" },
+    { value: "Wall Street" },
+  ];
+
+  const [showPopover, setShowPopover] = useState(false);
+
   const startAddresses = ["Address 1", "Address 2", "Address 3"];
+
+  const handleVisibleChange = (visible: boolean) => {
+    setShowPopover(visible);
+  };
 
   const renderStartAddresses = () => {
     return startAddresses.map((address) => (
@@ -148,7 +160,27 @@ const Main2 = () => {
             <AntCol flex={LeftSectionWidth}>start</AntCol>
             {renderStartAddresses()}
             <AntCol flex={LeftSectionWidth}>
-              <Button>add start address</Button>
+              {/* <Button>add start address</Button> */}
+              <Popover
+                content={
+                  <AutoComplete
+                    style={{ width: 200 }}
+                    options={options}
+                    // placeholder="try to type `b`"
+                    filterOption={(inputValue, option) =>
+                      option!.value
+                        .toUpperCase()
+                        .indexOf(inputValue.toUpperCase()) !== -1
+                    }
+                  />
+                }
+                // title="Title"
+                trigger="click"
+                visible={showPopover}
+                onVisibleChange={handleVisibleChange}
+              >
+                <Button type="primary">add start address</Button>
+              </Popover>
             </AntCol>
           </AntRow>
         </RowHeader>
