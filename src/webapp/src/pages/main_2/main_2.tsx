@@ -2,6 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import { Tag, Space, Row, Col, Button, Popover, AutoComplete } from "antd";
 import "antd/dist/antd.css";
+import PlacesAutocomplete2 from "../../components/places-autocomplete-2";
 
 const LeftSectionWidth = "120px";
 
@@ -163,16 +164,17 @@ const Main2 = () => {
               {/* <Button>add start address</Button> */}
               <Popover
                 content={
-                  <AutoComplete
-                    style={{ width: 200 }}
-                    options={options}
-                    // placeholder="try to type `b`"
-                    filterOption={(inputValue, option) =>
-                      option!.value
-                        .toUpperCase()
-                        .indexOf(inputValue.toUpperCase()) !== -1
-                    }
-                  />
+                  // <AutoComplete
+                  //   style={{ width: 200 }}
+                  //   options={options}
+                  //   // placeholder="try to type `b`"
+                  //   filterOption={(inputValue, option) =>
+                  //     option!.value
+                  //       .toUpperCase()
+                  //       .indexOf(inputValue.toUpperCase()) !== -1
+                  //   }
+                  // />
+                  <PlacesAutocomplete2 />
                 }
                 // title="Title"
                 trigger="click"
