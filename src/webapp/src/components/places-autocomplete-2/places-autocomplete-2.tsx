@@ -69,7 +69,14 @@ const PlacesAutocomplete2 = () => {
         structured_formatting: { main_text, secondary_text },
       } = suggestion;
 
-      return { value: main_text }; // todo: figure out how to display styled suggestions
+      return {
+        value: place_id,
+        label: (
+          <p>
+            {main_text} {secondary_text}
+          </p>
+        ),
+      }; // todo: figure out how to display styled suggestions
     });
 
   return (
