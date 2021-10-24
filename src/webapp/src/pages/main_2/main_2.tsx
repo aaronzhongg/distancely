@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { Tag, Space, Row, Col, Button, Popover, AutoComplete } from "antd";
 import "antd/dist/antd.css";
 import PlacesAutocomplete2 from "../../components/places-autocomplete-2";
+import axios from "axios";
 
 const LeftSectionWidth = "120px";
 
@@ -51,87 +52,34 @@ type Test = {
   tags: string[];
 };
 
+type Country = {
+  country: string;
+  countryCode: string;
+};
+
+async function GetUserCountry(): Promise<Country | null> {
+  var result = await axios("https://extreme-ip-lookup.com/json/");
+
+  if (result.status === 200)
+    return {
+      country: result.data.country,
+      countryCode: result.data.countryCode,
+    };
+
+  console.log("Cannot retrieve country");
+  return null;
+}
+
 const Main2 = () => {
-  const columns = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-      render: (text: string) => <a>{text}</a>,
-    },
-    {
-      title: "Age",
-      dataIndex: "age",
-      key: "age",
-    },
-    {
-      title: "Address",
-      dataIndex: "address",
-      key: "address",
-    },
-    {
-      title: "Tags",
-      key: "tags",
-      dataIndex: "tags",
-      render: (tags: string[]) => (
-        <>
-          {tags.map((tag: string) => {
-            let color = tag.length > 5 ? "geekblue" : "green";
-            if (tag === "loser") {
-              color = "volcano";
-            }
-            return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
-    },
-    {
-      title: "Action",
-      key: "action",
-      render: (text: string, record: Test) => (
-        <Space size="middle">
-          <a>Invite {record.name}</a>
-          <a>Delete</a>
-        </Space>
-      ),
-    },
-  ];
-
-  const data = [
-    {
-      key: "1",
-      name: "John Brown",
-      age: 32,
-      address: "New York No. 1 Lake Park",
-      tags: ["nice", "developer"],
-    },
-    {
-      key: "2",
-      name: "Jim Green",
-      age: 42,
-      address: "London No. 1 Lake Park",
-      tags: ["loser"],
-    },
-    {
-      key: "3",
-      name: "Joe Black",
-      age: 32,
-      address: "Sidney No. 1 Lake Park",
-      tags: ["cool", "teacher"],
-    },
-  ];
-
-  const options = [
-    { value: "Burns Bay Road" },
-    { value: "Downing Street" },
-    { value: "Wall Street" },
-  ];
-
+  const [userCountry, setUserCountry] = useState<Country | null>(null);
   const [showPopover, setShowPopover] = useState(false);
+
+  useEffect(() => {
+    const fetchUserCountry = async () => {
+      setUserCountry(await GetUserCountry());
+    };
+    fetchUserCountry();
+  }, []);
 
   const startAddresses = ["Address 1", "Address 2", "Address 3"];
 
@@ -147,36 +95,16 @@ const Main2 = () => {
 
   return (
     <MainWrapper>
-      {/* Manually creating styled components */}
-      {/* <Matrix>
-        <ColumnHeader></ColumnHeader>
-        <RowHeader></RowHeader>
-      </Matrix> */}
-
-      {/* Ant Table */}
-      {/* <Table columns={columns} dataSource={data} /> */}
       <MatrixWrapper>
         <RowHeader>
           <AntRow align="middle">
             <AntCol flex={LeftSectionWidth}>start</AntCol>
             {renderStartAddresses()}
             <AntCol flex={LeftSectionWidth}>
-              {/* <Button>add start address</Button> */}
               <Popover
                 content={
-                  // <AutoComplete
-                  //   style={{ width: 200 }}
-                  //   options={options}
-                  //   // placeholder="try to type `b`"
-                  //   filterOption={(inputValue, option) =>
-                  //     option!.value
-                  //       .toUpperCase()
-                  //       .indexOf(inputValue.toUpperCase()) !== -1
-                  //   }
-                  // />
-                  <PlacesAutocomplete2 />
+                  <PlacesAutocomplete2 country={userCountry?.countryCode} />
                 }
-                // title="Title"
                 trigger="click"
                 visible={showPopover}
                 onVisibleChange={handleVisibleChange}
