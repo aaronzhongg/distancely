@@ -13,7 +13,6 @@ export interface PlacesAutocompleteProps {
 }
 
 const PlacesAutocomplete2 = ({ country }: PlacesAutocompleteProps) => {
-  console.log(country);
   const {
     ready,
     value,
@@ -31,6 +30,10 @@ const PlacesAutocomplete2 = ({ country }: PlacesAutocompleteProps) => {
   });
 
   const [options, setOptions] = useState<SelectProps<object>["options"]>([]);
+  const [selectedOption, setSelectedOption] = useState<{
+    value: string;
+    display: string;
+  } | null>();
 
   useEffect(() => {
     var suggestions = data.map((suggestion) => {
@@ -40,14 +43,14 @@ const PlacesAutocomplete2 = ({ country }: PlacesAutocompleteProps) => {
       } = suggestion;
 
       return {
-        // TODO: decouple value with display value
         value: place_id,
+        // TODO: split main secondary text to separate row
         label: (
           <SuggestionWrapper>
-            <strong>{main_text}</strong> {secondary_text}
+            <strong>{main_text}</strong>, {secondary_text}
           </SuggestionWrapper>
         ),
-        test: place_id,
+        displayvalue: `${main_text}, ${secondary_text}`,
       };
     });
 
@@ -56,10 +59,19 @@ const PlacesAutocomplete2 = ({ country }: PlacesAutocompleteProps) => {
 
   return (
     <AutoComplete
-      value={value}
+      value={selectedOption?.display}
       style={{ width: 200 }}
       options={options}
-      onChange={(value) => setValue(value)}
+      onChange={(value) => {
+        if (selectedOption) setSelectedOption(null);
+        setValue(value);
+      }}
+      onSelect={(_, option) => {
+        setSelectedOption({
+          value: option.value,
+          display: option.displayvalue,
+        });
+      }}
     />
   );
 };
