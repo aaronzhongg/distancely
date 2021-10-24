@@ -6,6 +6,7 @@ import usePlacesAutocomplete, {
 import { useEffect, useState } from "react";
 import { AutoComplete, SelectProps } from "antd";
 import styled from "styled-components";
+import { Place } from "../../types/place";
 
 const SuggestionWrapper = styled.div`
   display: flex;
@@ -19,11 +20,18 @@ const SuggestionMain = styled.div`
 const SuggestionSecondary = styled.div`
   font-size: small;
 `;
+
 export interface PlacesAutocompleteProps {
   country?: string;
+  onSelectSuggestion?: (val: Place) => void;
+  clearOnSelection?: boolean;
 }
 
-const PlacesAutocomplete2 = ({ country }: PlacesAutocompleteProps) => {
+const PlacesAutocomplete2 = ({
+  country,
+  onSelectSuggestion,
+  clearOnSelection,
+}: PlacesAutocompleteProps) => {
   const {
     ready,
     value,
@@ -41,10 +49,7 @@ const PlacesAutocomplete2 = ({ country }: PlacesAutocompleteProps) => {
   });
 
   const [options, setOptions] = useState<SelectProps<object>["options"]>([]);
-  const [selectedOption, setSelectedOption] = useState<{
-    value: string;
-    display: string;
-  } | null>();
+  const [selectedOption, setSelectedOption] = useState<Place | null>();
 
   useEffect(() => {
     var suggestions = data.map((suggestion) => {
@@ -55,7 +60,6 @@ const PlacesAutocomplete2 = ({ country }: PlacesAutocompleteProps) => {
 
       return {
         value: place_id,
-        // TODO: split main secondary text to separate row
         label: (
           <SuggestionWrapper>
             <SuggestionMain>{main_text}</SuggestionMain>
@@ -71,19 +75,23 @@ const PlacesAutocomplete2 = ({ country }: PlacesAutocompleteProps) => {
 
   return (
     <AutoComplete
-      value={selectedOption?.display}
-      style={{ width: 400 }}
+      value={selectedOption?.displayText || value}
+      style={{ width: 300 }}
       options={options}
       onChange={(value) => {
         if (selectedOption) setSelectedOption(null);
         setValue(value);
       }}
       onSelect={(_, option) => {
-        setSelectedOption({
-          value: option.value,
-          display: option.displayvalue,
-        });
+        var selectedPlace = {
+          placeId: option.value,
+          displayText: option.displayvalue,
+        } as Place;
+        setSelectedOption(selectedPlace);
+        onSelectSuggestion && onSelectSuggestion(selectedPlace);
+        // clearOnSelection && setSelectedOption(null) && setValue(""); // TODO: fix clear on selection defaulting to value (placeId)
       }}
+      allowClear={true}
     />
   );
 };

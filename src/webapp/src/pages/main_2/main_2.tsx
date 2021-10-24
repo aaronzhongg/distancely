@@ -4,6 +4,7 @@ import { Tag, Space, Row, Col, Button, Popover, AutoComplete } from "antd";
 import "antd/dist/antd.css";
 import PlacesAutocomplete2 from "../../components/places-autocomplete-2";
 import axios from "axios";
+import { Place } from "../../types/place";
 
 const LeftSectionWidth = "120px";
 
@@ -73,6 +74,7 @@ async function GetUserCountry(): Promise<Country | null> {
 const Main2 = () => {
   const [userCountry, setUserCountry] = useState<Country | null>(null);
   const [showPopover, setShowPopover] = useState(false);
+  const [startAddresses, setStartAddresses] = useState<Place[]>([]);
 
   useEffect(() => {
     const fetchUserCountry = async () => {
@@ -81,7 +83,7 @@ const Main2 = () => {
     fetchUserCountry();
   }, []);
 
-  const startAddresses = ["Address 1", "Address 2", "Address 3"];
+  const startAddresses1 = ["Address 1", "Address 2", "Address 3"];
 
   const handleVisibleChange = (visible: boolean) => {
     setShowPopover(visible);
@@ -89,7 +91,7 @@ const Main2 = () => {
 
   const renderStartAddresses = () => {
     return startAddresses.map((address) => (
-      <AntCol flex="auto">{address}</AntCol>
+      <AntCol flex="auto">{address.displayText}</AntCol>
     ));
   };
 
@@ -103,7 +105,15 @@ const Main2 = () => {
             <AntCol flex={LeftSectionWidth}>
               <Popover
                 content={
-                  <PlacesAutocomplete2 country={userCountry?.countryCode} />
+                  // TODO: focus on show popover
+                  <PlacesAutocomplete2
+                    country={userCountry?.countryCode}
+                    onSelectSuggestion={(selectedPlace) => {
+                      setStartAddresses(startAddresses.concat(selectedPlace));
+                      setShowPopover(false);
+                    }}
+                    clearOnSelection={true}
+                  />
                 }
                 trigger="click"
                 visible={showPopover}
