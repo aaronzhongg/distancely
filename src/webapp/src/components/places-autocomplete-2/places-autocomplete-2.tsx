@@ -7,7 +7,18 @@ import { useEffect, useState } from "react";
 import { AutoComplete, SelectProps } from "antd";
 import styled from "styled-components";
 
-const SuggestionWrapper = styled.div``;
+const SuggestionWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const SuggestionMain = styled.div`
+  font-weight: 700;
+`;
+
+const SuggestionSecondary = styled.div`
+  font-size: small;
+`;
 export interface PlacesAutocompleteProps {
   country?: string;
 }
@@ -47,7 +58,8 @@ const PlacesAutocomplete2 = ({ country }: PlacesAutocompleteProps) => {
         // TODO: split main secondary text to separate row
         label: (
           <SuggestionWrapper>
-            <strong>{main_text}</strong>, {secondary_text}
+            <SuggestionMain>{main_text}</SuggestionMain>
+            <SuggestionSecondary>{secondary_text}</SuggestionSecondary>
           </SuggestionWrapper>
         ),
         displayvalue: `${main_text}, ${secondary_text}`,
@@ -60,7 +72,7 @@ const PlacesAutocomplete2 = ({ country }: PlacesAutocompleteProps) => {
   return (
     <AutoComplete
       value={selectedOption?.display}
-      style={{ width: 200 }}
+      style={{ width: 400 }}
       options={options}
       onChange={(value) => {
         if (selectedOption) setSelectedOption(null);
