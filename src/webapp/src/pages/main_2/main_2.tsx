@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useState } from "react";
+import { createRef, useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { Tag, Space, Row, Col, Button, Popover, AutoComplete } from "antd";
 import "antd/dist/antd.css";
 import PlacesAutocomplete2 from "../../components/places-autocomplete-2";
 import axios from "axios";
 import { Place } from "../../types/place";
+import React from "react";
+import { RefSelectProps } from "antd/lib/select";
 
 const LeftSectionWidth = "120px";
 
@@ -75,6 +77,7 @@ const Main2 = () => {
   const [userCountry, setUserCountry] = useState<Country | null>(null);
   const [showPopover, setShowPopover] = useState(false);
   const [startAddresses, setStartAddresses] = useState<Place[]>([]);
+  const startAddressAutocompleteRef = useRef<any>(null);
 
   useEffect(() => {
     const fetchUserCountry = async () => {
@@ -82,8 +85,6 @@ const Main2 = () => {
     };
     fetchUserCountry();
   }, []);
-
-  const startAddresses1 = ["Address 1", "Address 2", "Address 3"];
 
   const handleVisibleChange = (visible: boolean) => {
     setShowPopover(visible);
@@ -113,11 +114,18 @@ const Main2 = () => {
                       setShowPopover(false);
                     }}
                     clearOnSelection={true}
+                    ref={startAddressAutocompleteRef}
                   />
                 }
                 trigger="click"
                 visible={showPopover}
                 onVisibleChange={handleVisibleChange}
+                destroyTooltipOnHide={true}
+                // afterVisibleChange={(visible) => {
+                //   if (visible && startAddressAutocompleteRef.current) {
+                //     startAddressAutocompleteRef.current.focus();
+                //   }
+                // }}
               >
                 <Button type="primary">add start address</Button>
               </Popover>

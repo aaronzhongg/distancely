@@ -3,10 +3,12 @@ import usePlacesAutocomplete, {
   getLatLng,
   Suggestion,
 } from "use-places-autocomplete";
-import { useEffect, useState } from "react";
+import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { AutoComplete, SelectProps } from "antd";
 import styled from "styled-components";
 import { Place } from "../../types/place";
+import React from "react";
+import { RefSelectProps } from "antd/lib/select";
 
 const SuggestionWrapper = styled.div`
   display: flex;
@@ -25,13 +27,20 @@ export interface PlacesAutocompleteProps {
   country?: string;
   onSelectSuggestion?: (val: Place) => void;
   clearOnSelection?: boolean;
+  // ref?: MutableRefObject<any>;
 }
 
-const PlacesAutocomplete2 = ({
-  country,
-  onSelectSuggestion,
-  clearOnSelection,
-}: PlacesAutocompleteProps) => {
+const PlacesAutocomplete2 = React.forwardRef<
+  RefSelectProps,
+  PlacesAutocompleteProps
+>((props, ref) => {
+  let {
+    country,
+    onSelectSuggestion,
+    clearOnSelection,
+    // ref,
+  } = props;
+
   const {
     ready,
     value,
@@ -92,8 +101,10 @@ const PlacesAutocomplete2 = ({
         // clearOnSelection && setSelectedOption(null) && setValue(""); // TODO: fix clear on selection defaulting to value (placeId)
       }}
       allowClear={true}
+      autoFocus={true}
+      ref={ref}
     />
   );
-};
+});
 
 export default PlacesAutocomplete2;
