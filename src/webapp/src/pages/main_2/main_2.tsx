@@ -8,10 +8,17 @@ import { Place } from "../../types/place";
 import React from "react";
 import { RefSelectProps } from "antd/lib/select";
 
-const LeftSectionWidth = "120px";
+const LeftSectionWidth = "150px";
+
+const RowHeader = styled.div`
+  background-color: #227c9d;
+  height: 10vh;
+  min-height: 50px;
+`;
 
 const AntRow = styled(Row)`
-  height: 40px;
+  height: inherit;
+  min-height: inherit;
 `;
 
 const AntCol = styled(Col)`
@@ -19,6 +26,32 @@ const AntCol = styled(Col)`
   justify-content: center;
   align-content: center;
   flex-direction: column;
+  align-items: center;
+`;
+
+const StartLabel = styled(AntCol)`
+  align-items: center;
+  min-height: inherit;
+`;
+
+const StartAddresses = styled(AntCol)`
+  flex-grow: 10;
+  flex-direction: row;
+`;
+
+const ColumnHeader = styled(AntCol)`
+  flex: 0 0 ${LeftSectionWidth};
+  background-color: #ffcb77;
+  height: 90vh;
+`;
+
+const DestinationLabel = styled(AntCol)`
+  align-items: center;
+  height: 10vh;
+`;
+
+const DestinationAddresses = styled(AntCol)`
+  flex-grow: 10;
 `;
 
 const MainWrapper = styled.div``;
@@ -27,25 +60,17 @@ const MatrixWrapper = styled.div`
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  background-color: aliceblue;
-`;
-
-const RowHeader = styled.div`
-  background-color: green;
 `;
 
 const RenameThisOneDay = styled.div`
   display: flex;
   flex-direction: row;
   flex-grow: 1;
-  background-color: darkblue;
 `;
 
 const MatrixBody = styled.div`
-  /* width: 100%; */
   display: flex;
   flex-grow: 1;
-  background-color: darkcyan;
 `;
 
 type Test = {
@@ -106,13 +131,13 @@ const Main2 = () => {
   // TODO: Render main text, mouseover more details
   const renderStartAddresses = () => {
     return startAddresses.map((address) => (
-      <AntCol flex="auto">{address.displayText}</AntCol>
+      <AntCol flex="auto">{address.mainText}</AntCol>
     ));
   };
 
   const renderDestinationAddresses = () => {
     return destinationAddresses.map((address) => (
-      <AntCol flex="auto">{address.displayText}</AntCol>
+      <AntCol flex="auto">{address.mainText}</AntCol>
     ));
   };
 
@@ -121,8 +146,8 @@ const Main2 = () => {
       <MatrixWrapper>
         <RowHeader>
           <AntRow align="middle">
-            <AntCol flex={LeftSectionWidth}>start</AntCol>
-            {renderStartAddresses()}
+            <StartLabel flex={LeftSectionWidth}>start</StartLabel>
+            <StartAddresses>{renderStartAddresses()}</StartAddresses>
             {/* TODO: Float "add start address" button to right */}
             <AntCol flex={LeftSectionWidth}>
               <Popover
@@ -141,39 +166,41 @@ const Main2 = () => {
                 onVisibleChange={handleAddStartAddressVisibleChange}
                 destroyTooltipOnHide={true}
               >
-                <Button type="primary">add start address</Button>
+                <Button type="primary">add start</Button>
               </Popover>
             </AntCol>
           </AntRow>
         </RowHeader>
         <RenameThisOneDay>
-          <MatrixBody>
-            <AntCol flex={LeftSectionWidth}>
-              <Row>Column header</Row>
+          <ColumnHeader>
+            <DestinationLabel>destinations</DestinationLabel>
+            <DestinationAddresses>
               {renderDestinationAddresses()}
-              <Row>
-                <Popover
-                  content={
-                    <PlacesAutocomplete2
-                      country={userCountry?.countryCode}
-                      onSelectSuggestion={(selectedPlace) => {
-                        setDestinationAddresses(
-                          destinationAddresses.concat(selectedPlace)
-                        );
-                        setDestinationAddressShowPopover(false);
-                      }}
-                      clearOnSelection={true}
-                    />
-                  }
-                  trigger="click"
-                  visible={showDestinationAddressPopover}
-                  onVisibleChange={handleAddDestinationAddressVisibleChange}
-                  destroyTooltipOnHide={true}
-                >
-                  <Button type="primary">add destination address</Button>
-                </Popover>
-              </Row>
-            </AntCol>
+            </DestinationAddresses>
+            <Row>
+              <Popover
+                content={
+                  <PlacesAutocomplete2
+                    country={userCountry?.countryCode}
+                    onSelectSuggestion={(selectedPlace) => {
+                      setDestinationAddresses(
+                        destinationAddresses.concat(selectedPlace)
+                      );
+                      setDestinationAddressShowPopover(false);
+                    }}
+                    clearOnSelection={true}
+                  />
+                }
+                trigger="click"
+                visible={showDestinationAddressPopover}
+                onVisibleChange={handleAddDestinationAddressVisibleChange}
+                destroyTooltipOnHide={true}
+              >
+                <Button type="primary">add destination</Button>
+              </Popover>
+            </Row>
+          </ColumnHeader>
+          <MatrixBody>
             <Row>
               <Col span={24}>col</Col>
             </Row>

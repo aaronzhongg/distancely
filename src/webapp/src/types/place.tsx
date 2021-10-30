@@ -1,4 +1,5 @@
 export type Place = {
   placeId: string;
-  displayText: string;
+  mainText: string;
+  secondaryText: string;
 };

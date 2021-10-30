@@ -76,6 +76,8 @@ const PlacesAutocomplete2 = React.forwardRef<
           </SuggestionWrapper>
         ),
         displayvalue: `${main_text}, ${secondary_text}`,
+        maintext: main_text,
+        secondarytext: secondary_text,
       };
     });
 
@@ -84,7 +86,11 @@ const PlacesAutocomplete2 = React.forwardRef<
 
   return (
     <AutoComplete
-      value={selectedOption?.displayText || value}
+      value={
+        (selectedOption &&
+          `${selectedOption.mainText}, ${selectedOption.secondaryText}`) ||
+        value
+      }
       style={{ width: 300 }}
       options={options}
       onChange={(value) => {
@@ -94,7 +100,9 @@ const PlacesAutocomplete2 = React.forwardRef<
       onSelect={(_, option) => {
         var selectedPlace = {
           placeId: option.value,
-          displayText: option.displayvalue,
+          // displayText: option.displayvalue,
+          mainText: option.maintext,
+          secondaryText: option.secondarytext,
         } as Place;
         setSelectedOption(selectedPlace);
         onSelectSuggestion && onSelectSuggestion(selectedPlace);
