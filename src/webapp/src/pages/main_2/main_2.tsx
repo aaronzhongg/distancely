@@ -32,6 +32,8 @@ const AntCol = styled(Col)`
 const StartLabel = styled(AntCol)`
   align-items: center;
   min-height: inherit;
+  font-weight: bold;
+  font-size: x-large;
 `;
 
 const StartAddresses = styled(AntCol)`
@@ -45,9 +47,15 @@ const ColumnHeader = styled(AntCol)`
   height: 90vh;
 `;
 
+const DestinationLabelWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
 const DestinationLabel = styled(AntCol)`
-  align-items: center;
-  height: 10vh;
+  font-weight: bold;
+  font-size: x-large;
+  height: 5vh;
 `;
 
 const DestinationAddresses = styled(AntCol)`
@@ -181,7 +189,7 @@ const Main2 = () => {
       <MatrixWrapper>
         <RowHeader>
           <AntRow align="middle">
-            <StartLabel flex={LeftSectionWidth}>start</StartLabel>
+            <StartLabel flex={LeftSectionWidth}>start ➡</StartLabel>
             <StartAddresses>{renderStartAddresses()}</StartAddresses>
             {/* TODO: Float "add start address" button to right */}
             <AntCol flex={LeftSectionWidth}>
@@ -208,7 +216,10 @@ const Main2 = () => {
         </RowHeader>
         <RenameThisOneDay>
           <ColumnHeader>
-            <DestinationLabel>destinations</DestinationLabel>
+            <DestinationLabelWrapper>
+              <DestinationLabel>destinations</DestinationLabel>
+              <DestinationLabel>⬇</DestinationLabel>
+            </DestinationLabelWrapper>
             <DestinationAddresses>
               {renderDestinationAddresses()}
             </DestinationAddresses>
