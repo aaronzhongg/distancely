@@ -18,6 +18,7 @@ const AntCol = styled(Col)`
   display: flex;
   justify-content: center;
   align-content: center;
+  flex-direction: column;
 `;
 
 const MainWrapper = styled.div``;
@@ -75,8 +76,16 @@ async function GetUserCountry(): Promise<Country | null> {
 
 const Main2 = () => {
   const [userCountry, setUserCountry] = useState<Country | null>(null);
-  const [showPopover, setShowPopover] = useState(false);
+  // Start
+  const [showStartAddressPopover, setStartAddressShowPopover] = useState(false);
   const [startAddresses, setStartAddresses] = useState<Place[]>([]);
+
+  // Destination
+  const [
+    showDestinationAddressPopover,
+    setDestinationAddressShowPopover,
+  ] = useState(false);
+  const [destinationAddresses, setDestinationAddresses] = useState<Place[]>([]);
   const startAddressAutocompleteRef = useRef<any>(null);
 
   useEffect(() => {
@@ -86,12 +95,23 @@ const Main2 = () => {
     fetchUserCountry();
   }, []);
 
-  const handleVisibleChange = (visible: boolean) => {
-    setShowPopover(visible);
+  const handleAddStartAddressVisibleChange = (visible: boolean) => {
+    setStartAddressShowPopover(visible);
   };
 
+  const handleAddDestinationAddressVisibleChange = (visible: boolean) => {
+    setDestinationAddressShowPopover(visible);
+  };
+
+  // TODO: Render main text, mouseover more details
   const renderStartAddresses = () => {
     return startAddresses.map((address) => (
+      <AntCol flex="auto">{address.displayText}</AntCol>
+    ));
+  };
+
+  const renderDestinationAddresses = () => {
+    return destinationAddresses.map((address) => (
       <AntCol flex="auto">{address.displayText}</AntCol>
     ));
   };
@@ -103,29 +123,23 @@ const Main2 = () => {
           <AntRow align="middle">
             <AntCol flex={LeftSectionWidth}>start</AntCol>
             {renderStartAddresses()}
+            {/* TODO: Float "add start address" button to right */}
             <AntCol flex={LeftSectionWidth}>
               <Popover
                 content={
-                  // TODO: focus on show popover
                   <PlacesAutocomplete2
                     country={userCountry?.countryCode}
                     onSelectSuggestion={(selectedPlace) => {
                       setStartAddresses(startAddresses.concat(selectedPlace));
-                      setShowPopover(false);
+                      setStartAddressShowPopover(false);
                     }}
                     clearOnSelection={true}
-                    ref={startAddressAutocompleteRef}
                   />
                 }
                 trigger="click"
-                visible={showPopover}
-                onVisibleChange={handleVisibleChange}
+                visible={showStartAddressPopover}
+                onVisibleChange={handleAddStartAddressVisibleChange}
                 destroyTooltipOnHide={true}
-                // afterVisibleChange={(visible) => {
-                //   if (visible && startAddressAutocompleteRef.current) {
-                //     startAddressAutocompleteRef.current.focus();
-                //   }
-                // }}
               >
                 <Button type="primary">add start address</Button>
               </Popover>
@@ -134,7 +148,32 @@ const Main2 = () => {
         </RowHeader>
         <RenameThisOneDay>
           <MatrixBody>
-            <AntCol flex={LeftSectionWidth}>Column header</AntCol>
+            <AntCol flex={LeftSectionWidth}>
+              <Row>Column header</Row>
+              {renderDestinationAddresses()}
+              <Row>
+                <Popover
+                  content={
+                    <PlacesAutocomplete2
+                      country={userCountry?.countryCode}
+                      onSelectSuggestion={(selectedPlace) => {
+                        setDestinationAddresses(
+                          destinationAddresses.concat(selectedPlace)
+                        );
+                        setDestinationAddressShowPopover(false);
+                      }}
+                      clearOnSelection={true}
+                    />
+                  }
+                  trigger="click"
+                  visible={showDestinationAddressPopover}
+                  onVisibleChange={handleAddDestinationAddressVisibleChange}
+                  destroyTooltipOnHide={true}
+                >
+                  <Button type="primary">add destination address</Button>
+                </Popover>
+              </Row>
+            </AntCol>
             <Row>
               <Col span={24}>col</Col>
             </Row>
