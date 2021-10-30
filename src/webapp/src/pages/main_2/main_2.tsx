@@ -71,6 +71,25 @@ const RenameThisOneDay = styled.div`
 const MatrixBody = styled.div`
   display: flex;
   flex-grow: 1;
+  flex-direction: column;
+  height: 90vh;
+`;
+
+const MatrixBodyHeader = styled(Row)`
+  height: 10vh;
+  background-color: #17c3b2;
+`;
+
+const MatrixRows = styled.div`
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+`;
+
+const MatrixRow = styled.div`
+  display: flex;
+  flex-grow: 1;
+  flex-direction: row;
 `;
 
 type Test = {
@@ -141,6 +160,22 @@ const Main2 = () => {
     ));
   };
 
+  const renderMatrixRows = () => {
+    return destinationAddresses.map((da) => {
+      return (
+        <MatrixRow>
+          {startAddresses.map((sa) => {
+            return (
+              <AntCol flex="auto">
+                {da.mainText} {sa.mainText}
+              </AntCol>
+            );
+          })}
+        </MatrixRow>
+      );
+    });
+  };
+
   return (
     <MainWrapper>
       <MatrixWrapper>
@@ -201,24 +236,28 @@ const Main2 = () => {
             </Row>
           </ColumnHeader>
           <MatrixBody>
-            <Row>
-              <Col span={24}>col</Col>
-            </Row>
-            <Row>
-              <Col span={12}>col-12</Col>
-              <Col span={12}>col-12</Col>
-            </Row>
-            <Row>
-              <Col span={8}>col-8</Col>
-              <Col span={8}>col-8</Col>
-              <Col span={8}>col-8</Col>
-            </Row>
-            <Row>
-              <Col span={6}>col-6</Col>
-              <Col span={6}>col-6</Col>
-              <Col span={6}>col-6</Col>
-              <Col span={6}>col-6</Col>
-            </Row>
+            <MatrixBodyHeader>Average</MatrixBodyHeader>
+            <MatrixRows>
+              {/* <Row>
+                <Col span={24}>col</Col>
+              </Row>
+              <Row>
+                <Col span={12}>col-12</Col>
+                <Col span={12}>col-12</Col>
+              </Row>
+              <Row>
+                <Col span={8}>col-8</Col>
+                <Col span={8}>col-8</Col>
+                <Col span={8}>col-8</Col>
+              </Row>
+              <Row>
+                <Col span={6}>col-6</Col>
+                <Col span={6}>col-6</Col>
+                <Col span={6}>col-6</Col>
+                <Col span={6}>col-6</Col>
+              </Row> */}
+              {renderMatrixRows()}
+            </MatrixRows>
           </MatrixBody>
         </RenameThisOneDay>
       </MatrixWrapper>
