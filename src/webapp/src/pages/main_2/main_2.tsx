@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Tag, Space, Row, Col, Button, Popover, AutoComplete } from "antd";
 import "antd/dist/antd.css";
 import PlacesAutocomplete2 from "../../components/places-autocomplete-2";
+import PlacePopover from "../../components/place-popover";
 import axios from "axios";
 import { Place } from "../../types/place";
 import React from "react";
@@ -25,8 +26,8 @@ const AntCol = styled(Col)`
   display: flex;
   justify-content: center;
   align-content: center;
-  flex-direction: column;
   align-items: center;
+  flex-direction: column;
 `;
 
 const StartLabel = styled(AntCol)`
@@ -157,14 +158,12 @@ const Main2 = () => {
 
   // TODO: Render main text, mouseover more details
   const renderStartAddresses = () => {
-    return startAddresses.map((address) => (
-      <AntCol flex="auto">{address.mainText}</AntCol>
-    ));
+    return startAddresses.map((address) => <PlacePopover place={address} />);
   };
 
   const renderDestinationAddresses = () => {
     return destinationAddresses.map((address) => (
-      <AntCol flex="auto">{address.mainText}</AntCol>
+      <PlacePopover place={address} />
     ));
   };
 
