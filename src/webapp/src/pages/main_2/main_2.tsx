@@ -1,6 +1,15 @@
 import { createRef, useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { Tag, Space, Row, Col, Button, Popover, AutoComplete } from "antd";
+import {
+  Tag,
+  Space,
+  Row,
+  Col,
+  Button,
+  Popover,
+  AutoComplete,
+  Divider,
+} from "antd";
 import "antd/dist/antd.css";
 import PlacesAutocomplete2 from "../../components/places-autocomplete-2";
 import PlacePopover from "../../components/place-popover";
@@ -33,6 +42,7 @@ const AntCol = styled(Col)`
 const StartLabel = styled(AntCol)`
   align-items: center;
   min-height: inherit;
+  height: inherit;
   font-weight: bold;
   font-size: x-large;
 `;
@@ -40,6 +50,13 @@ const StartLabel = styled(AntCol)`
 const StartAddresses = styled(AntCol)`
   flex-grow: 10;
   flex-direction: row;
+  min-height: inherit;
+  height: inherit;
+`;
+
+const VerticalDivider = styled(Divider)`
+  min-height: inherit;
+  height: inherit;
 `;
 
 const ColumnHeader = styled(AntCol)`
@@ -156,15 +173,31 @@ const Main2 = () => {
     setDestinationAddressShowPopover(visible);
   };
 
-  // TODO: Render main text, mouseover more details
+  const shouldHaveDivider = (length: number, index: number) =>
+    length > 0 && length != index + 1;
+
   const renderStartAddresses = () => {
-    return startAddresses.map((address) => <PlacePopover place={address} />);
+    return startAddresses.map((address, index) => {
+      return (
+        <>
+          <PlacePopover place={address} />
+          {shouldHaveDivider(startAddresses.length, index) && (
+            <VerticalDivider type="vertical" />
+          )}
+        </>
+      );
+    });
   };
 
   const renderDestinationAddresses = () => {
-    return destinationAddresses.map((address) => (
-      <PlacePopover place={address} />
-    ));
+    return destinationAddresses.map((address, index) => {
+      return (
+        <>
+          <PlacePopover place={address} />
+          {shouldHaveDivider(destinationAddresses.length, index) && <Divider />}
+        </>
+      );
+    });
   };
 
   const renderMatrixRows = () => {
