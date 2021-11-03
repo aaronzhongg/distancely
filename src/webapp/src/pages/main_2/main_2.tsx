@@ -80,12 +80,22 @@ const DestinationAddresses = styled(AntCol)`
   flex-grow: 10;
 `;
 
-const MainWrapper = styled.div``;
+const MainWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
 
 const MatrixWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
+  /* flex-grow: 1; */
+  flex-basis: 50%;
+`;
+
+const MapWrapper = styled.div`
+  display: flex;
+  /* flex-grow: 1; */
+  flex-basis: 50%;
 `;
 
 const RenameThisOneDay = styled.div`
@@ -99,6 +109,7 @@ const MatrixBody = styled.div`
   flex-grow: 1;
   flex-direction: column;
   height: 90vh;
+  flex-basis: 50%;
 `;
 
 const MatrixBodyHeader = styled(Row)`
@@ -304,6 +315,7 @@ const Main2 = () => {
           </MatrixBody>
         </RenameThisOneDay>
       </MatrixWrapper>
+      <MapWrapper></MapWrapper>
     </MainWrapper>
   );
 };
