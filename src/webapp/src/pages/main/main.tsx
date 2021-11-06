@@ -17,12 +17,13 @@ import axios from "axios";
 import { Place } from "../../types/place";
 import React from "react";
 import { RefSelectProps } from "antd/lib/select";
+import { Distance } from "../../types/distance";
 
 const LeftSectionWidth = "150px";
 
 const RowHeader = styled.div`
   background-color: #227c9d;
-  height: 10vh;
+  height: 5vh;
   min-height: 50px;
 `;
 
@@ -44,10 +45,11 @@ const StartLabel = styled(AntCol)`
   min-height: inherit;
   height: inherit;
   font-weight: bold;
-  font-size: x-large;
+  font-size: 14px;
 `;
 
 const StartAddresses = styled(AntCol)`
+  font-size: 14px;
   flex-grow: 10;
   flex-direction: row;
   min-height: inherit;
@@ -62,7 +64,7 @@ const VerticalDivider = styled(Divider)`
 const ColumnHeader = styled(AntCol)`
   flex: 0 0 ${LeftSectionWidth};
   background-color: #ffcb77;
-  height: 90vh;
+  /* height: 90vh; */
 `;
 
 const DestinationLabelWrapper = styled.div`
@@ -72,8 +74,8 @@ const DestinationLabelWrapper = styled.div`
 
 const DestinationLabel = styled(AntCol)`
   font-weight: bold;
-  font-size: x-large;
-  height: 5vh;
+  font-size: 14px;
+  height: 25px;
 `;
 
 const DestinationAddresses = styled(AntCol)`
@@ -83,6 +85,8 @@ const DestinationAddresses = styled(AntCol)`
 const MainWrapper = styled.div`
   display: flex;
   flex-direction: row;
+  /* min-height: 900px;
+  min-width: 1440px; */
 `;
 
 const MatrixWrapper = styled.div`
@@ -113,7 +117,7 @@ const MatrixBody = styled.div`
 `;
 
 const MatrixBodyHeader = styled(Row)`
-  height: 10vh;
+  height: 50px;
   background-color: #17c3b2;
 `;
 
@@ -128,14 +132,6 @@ const MatrixRow = styled.div`
   flex-grow: 1;
   flex-direction: row;
 `;
-
-type Test = {
-  key: string;
-  name: string;
-  age: number;
-  address: string;
-  tags: string[];
-};
 
 type Country = {
   country: string;
@@ -155,6 +151,14 @@ async function GetUserCountry(): Promise<Country | null> {
   return null;
 }
 
+// todo: update this?
+// type Distance = {
+//   start: Place,
+//   destination: Place,
+//   travelTimeSeconds: number,
+//   distanceM: number
+// }
+
 const Main2 = () => {
   const [userCountry, setUserCountry] = useState<Country | null>(null);
   // Start
@@ -167,7 +171,9 @@ const Main2 = () => {
     setDestinationAddressShowPopover,
   ] = useState(false);
   const [destinationAddresses, setDestinationAddresses] = useState<Place[]>([]);
-  const startAddressAutocompleteRef = useRef<any>(null);
+
+  // Distance
+  const [distances, setDistances] = useState<Distance[][]>([]); // [start.len][dest.length]
 
   useEffect(() => {
     const fetchUserCountry = async () => {
@@ -180,9 +186,39 @@ const Main2 = () => {
     setStartAddressShowPopover(visible);
   };
 
+  // todo: remove startAddresses and destionationAddresses, just use 2d array with new type
+  const addStartAddress = (selectedPlace: Place) => {
+    setStartAddresses(startAddresses.concat(selectedPlace));
+    setStartAddressShowPopover(false);
+
+    // Adding new start address adds an item into each inner list
+    var newDistance = {
+      destination: "test",
+    } as Distance;
+
+    if (distances.length == 0) {
+      setDistances([[newDistance]]);
+    } else {
+      setDistances(distances.map((d) => d.concat(newDistance)));
+    }
+  };
+
   const handleAddDestinationAddressVisibleChange = (visible: boolean) => {
     setDestinationAddressShowPopover(visible);
   };
+
+  const addDestinationAddress = (selectedPlace: Place) => {
+    setDestinationAddresses(destinationAddresses.concat(selectedPlace));
+    setDestinationAddressShowPopover(false);
+
+    // todo: add start addresses to new row
+    setDistances([...distances, []]);
+  };
+
+  useEffect(() => {
+    console.log("here");
+    console.log(distances);
+  }, [distances]);
 
   const shouldHaveDivider = (length: number, index: number) =>
     length > 0 && length != index + 1;
@@ -240,10 +276,7 @@ const Main2 = () => {
                 content={
                   <PlacesAutocomplete2
                     country={userCountry?.countryCode}
-                    onSelectSuggestion={(selectedPlace) => {
-                      setStartAddresses(startAddresses.concat(selectedPlace));
-                      setStartAddressShowPopover(false);
-                    }}
+                    onSelectSuggestion={addStartAddress}
                     clearOnSelection={true}
                   />
                 }
@@ -271,12 +304,7 @@ const Main2 = () => {
                 content={
                   <PlacesAutocomplete2
                     country={userCountry?.countryCode}
-                    onSelectSuggestion={(selectedPlace) => {
-                      setDestinationAddresses(
-                        destinationAddresses.concat(selectedPlace)
-                      );
-                      setDestinationAddressShowPopover(false);
-                    }}
+                    onSelectSuggestion={addDestinationAddress}
                     clearOnSelection={true}
                   />
                 }
