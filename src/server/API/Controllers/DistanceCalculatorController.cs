@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Application.UseCases.CalculateDistanceTo;
-using Domain;
+﻿using System.Threading.Tasks;
+using Application.Distance.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -11,25 +10,19 @@ namespace API.Controllers
     [Route("[controller]")]
     public class DistanceCalculatorController : ControllerBase
     {
+        private readonly ISender _mediator;
         private readonly ILogger<DistanceCalculatorController> _logger;
 
-        private readonly CalculateDistanceToPresenter _calculateDistanceToPresenter;
-
-        public DistanceCalculatorController(ILogger<DistanceCalculatorController> logger)
+        public DistanceCalculatorController(ISender sender, ILogger<DistanceCalculatorController> logger)
         {
             _logger = logger;
-            _calculateDistanceToPresenter = new CalculateDistanceToPresenter();
+            _mediator = sender;
         }
 
-
-        // todo: fix params binding - use request body?
         [HttpGet]
-        public async Task<IReadOnlyCollection<Destination>> GetAsync([FromServices] ICalculateDistanceToUseCase useCase, string fromAddress, params string[] destinationAddresses)
+        public async Task<DistanceDto> GetAsync([FromQuery]GetDistanceQuery query)
         {
-            useCase.SetOutputPort(_calculateDistanceToPresenter);
-            await useCase.Execute(fromAddress,destinationAddresses);
-
-            return _calculateDistanceToPresenter.Distances;
+            return await _mediator.Send(query);
         }
     }
 }
