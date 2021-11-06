@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
-import PlacesAutocomplete from "../../components/places-autocomplete";
+import PlacesAutocomplete from "../../components/places-autocomplete-old";
 
 const LandingWrapper = styled.div`
 justify-content: center;

@@ -1,30 +1,140 @@
-import React, { useRef, useState } from "react";
+import { createRef, useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { device } from "../../breakpoints";
-import { useLazyQuery } from "@apollo/client";
-
-// components
-import spinner from "../../assets/spinner.gif";
-
-// services
-import { GET_DISTANCES } from "../../graphql/queries";
+import {
+  Tag,
+  Space,
+  Row,
+  Col,
+  Button,
+  Popover,
+  AutoComplete,
+  Divider,
+} from "antd";
+import "antd/dist/antd.css";
+import PlacesAutocomplete2 from "../../components/places-autocomplete";
+import PlacePopover from "../../components/place-popover";
 import axios from "axios";
-import Table, { ColumnDefinitionType } from "../../components/table/table";
-import { Distance } from "../../types/distance";
-import PlacesAutocomplete from "../../components/places-autocomplete";
+import { Place } from "../../types/place";
+import React from "react";
+import { RefSelectProps } from "antd/lib/select";
 
-// import GetUserCountry from "../../services/user-location";
+const LeftSectionWidth = "150px";
 
-import mixpanel from "mixpanel-browser";
+const RowHeader = styled.div`
+  background-color: #227c9d;
+  height: 10vh;
+  min-height: 50px;
+`;
 
-type DistanceType = {
-  place: PlaceType;
-  travelTime: number;
-  distanceMeters: number;
-};
+const AntRow = styled(Row)`
+  height: inherit;
+  min-height: inherit;
+`;
 
-type PlaceType = {
+const AntCol = styled(Col)`
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  flex-direction: column;
+`;
+
+const StartLabel = styled(AntCol)`
+  align-items: center;
+  min-height: inherit;
+  height: inherit;
+  font-weight: bold;
+  font-size: x-large;
+`;
+
+const StartAddresses = styled(AntCol)`
+  flex-grow: 10;
+  flex-direction: row;
+  min-height: inherit;
+  height: inherit;
+`;
+
+const VerticalDivider = styled(Divider)`
+  min-height: inherit;
+  height: inherit;
+`;
+
+const ColumnHeader = styled(AntCol)`
+  flex: 0 0 ${LeftSectionWidth};
+  background-color: #ffcb77;
+  height: 90vh;
+`;
+
+const DestinationLabelWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const DestinationLabel = styled(AntCol)`
+  font-weight: bold;
+  font-size: x-large;
+  height: 5vh;
+`;
+
+const DestinationAddresses = styled(AntCol)`
+  flex-grow: 10;
+`;
+
+const MainWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
+const MatrixWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  /* flex-grow: 1; */
+  flex-basis: 50%;
+`;
+
+const MapWrapper = styled.div`
+  display: flex;
+  /* flex-grow: 1; */
+  flex-basis: 50%;
+`;
+
+const RenameThisOneDay = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+`;
+
+const MatrixBody = styled.div`
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  height: 90vh;
+  flex-basis: 50%;
+`;
+
+const MatrixBodyHeader = styled(Row)`
+  height: 10vh;
+  background-color: #17c3b2;
+`;
+
+const MatrixRows = styled.div`
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+`;
+
+const MatrixRow = styled.div`
+  display: flex;
+  flex-grow: 1;
+  flex-direction: row;
+`;
+
+type Test = {
+  key: string;
+  name: string;
+  age: number;
   address: string;
+  tags: string[];
 };
 
 type Country = {
@@ -32,97 +142,6 @@ type Country = {
   countryCode: string;
 };
 
-const UNKNOWN = -1;
-
-const AppWrapper = styled.div`
-  display: flex;
-  min-height: 100%;
-  align-items: stretch;
-  flex-direction: column;
-`;
-
-// todo: media query
-const HeadingWrapper = styled.div`
-  display: flex;
-  width: 100%;
-  top: 0;
-  align-items: center;
-  justify-content: center;
-
-  // @media ${device.sm_and_larger} {
-  //   position: fixed;
-  // }
-`;
-
-const Title = styled.p`
-  font-size: 48px;
-  font-weight: 700;
-  letter-spacing: -2px;
-  margin: 24px 0px;
-`;
-
-const BodyWrapper = styled.div`
-  flex: 9;
-  display: flex;
-  @media ${device.sm_and_smaller} {
-    flex-direction: column;
-  }
-`;
-
-const LeftSectionWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  // background: blue;
-  flex: 1;
-  align-items: center;
-  // justify-content: center;
-`;
-
-const DirectionsFormWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 320px;
-
-  & > * {
-    margin: 10px 15px;
-  }
-
-  @media ${device.sm_and_larger} {
-    width: 420px;
-  }
-`;
-
-const TableWrapper = styled.div`
-  margin: 20px;
-`;
-
-const Spinner = styled.img`
-  height: 20px;
-  width: 20px;
-`;
-
-// todo: move to helper file
-const FormatTime = (timeInSeconds: number) => {
-  if (!timeInSeconds) return <Spinner src={spinner} alt="loading..." />;
-  if (timeInSeconds === UNKNOWN) return "?";
-
-  if (timeInSeconds < 60) return `${Math.round(timeInSeconds)} seconds`;
-
-  if (timeInSeconds < 3600) return `${Math.round(timeInSeconds / 60)} minutes`;
-
-  return `${Math.round(timeInSeconds / 60 / 60)} hours`;
-};
-
-const FormatDistance = (distanceInMeters: number) => {
-  if (!distanceInMeters) return <Spinner src={spinner} alt="loading..." />;
-  if (distanceInMeters === UNKNOWN) return "?";
-
-  if (distanceInMeters < 100) return `${Math.round(distanceInMeters)} meters`;
-
-  return `${Math.round((distanceInMeters / 1000) * 10) / 10}km`;
-};
-
-// todo: move to shared file
 async function GetUserCountry(): Promise<Country | null> {
   var result = await axios("https://extreme-ip-lookup.com/json/");
 
@@ -136,156 +155,149 @@ async function GetUserCountry(): Promise<Country | null> {
   return null;
 }
 
-const distanceColumns: ColumnDefinitionType<Distance, keyof Distance>[] = [
-  {
-    key: "destination",
-    header: "Destinations",
-    width: 250,
-  },
-  {
-    key: "travelTime",
-    header: "Travel Time",
-    format: (value) => FormatTime(value as number),
-  },
-  {
-    key: "distance",
-    header: "Distance",
-    format: (value) => FormatDistance(value as number),
-  },
-];
-
-const Main = () => {
-  const fromAddressRef = useRef("");
-  const onToAddressSuggestionSelectedRef = useRef(true);
-  const [toAddress, setToAddress] = useState("");
+const Main2 = () => {
   const [userCountry, setUserCountry] = useState<Country | null>(null);
-  var [destinations, setDestinations] = useState<Distance[]>([]);
+  // Start
+  const [showStartAddressPopover, setStartAddressShowPopover] = useState(false);
+  const [startAddresses, setStartAddresses] = useState<Place[]>([]);
 
-  const [getDistances, { loading, /*error,*/ data }] = useLazyQuery(
-    GET_DISTANCES,
-    {
-      onCompleted: (data) => {
-        var resultDestinations = data.destinations as [DistanceType];
-        destinations = destinations.map((dest) => {
-          var destinationDistance = resultDestinations.find((d) => {
-            return d && d.place.address.startsWith(dest.destination);
-          }) as DistanceType;
+  // Destination
+  const [
+    showDestinationAddressPopover,
+    setDestinationAddressShowPopover,
+  ] = useState(false);
+  const [destinationAddresses, setDestinationAddresses] = useState<Place[]>([]);
+  const startAddressAutocompleteRef = useRef<any>(null);
 
-          if (!destinationDistance) {
-            dest.distance = UNKNOWN;
-            dest.travelTime = UNKNOWN;
-          } else {
-            dest.distance = destinationDistance.distanceMeters;
-            dest.travelTime = destinationDistance.travelTime;
-          }
-
-          return dest;
-        });
-        setDestinations(destinations);
-      },
-    }
-  );
-
-  React.useEffect(() => {
-    mixpanel.track("Page Visit");
+  useEffect(() => {
     const fetchUserCountry = async () => {
       setUserCountry(await GetUserCountry());
     };
     fetchUserCountry();
   }, []);
 
-  React.useEffect(() => {
-    if (onToAddressSuggestionSelectedRef.current) {
-      addDestinationAddressHandler();
-      onToAddressSuggestionSelectedRef.current = false;
-      setToAddress("");
-    }
-  }, [toAddress]);
-
-  const addDestinationAddressHandler = () => {
-    if (!toAddress) return;
-
-    mixpanel.track("Destination Added", { Address: toAddress });
-
-    destinations = destinations.concat({
-      destination: toAddress,
-      travelTime: undefined,
-      distance: undefined,
-    });
-    setDestinations(destinations);
-    setToAddress("");
-
-    updateDestinationTravelTimes();
+  const handleAddStartAddressVisibleChange = (visible: boolean) => {
+    setStartAddressShowPopover(visible);
   };
 
-  const updateDestinationTravelTimes = () => {
-    getDistances({
-      variables: {
-        fromAddress: `${fromAddressRef.current}, ${userCountry?.country}`,
-        destinationAddresses: destinations.map(
-          (d) => `${d.destination}, ${userCountry?.country}`
-        ),
-      },
+  const handleAddDestinationAddressVisibleChange = (visible: boolean) => {
+    setDestinationAddressShowPopover(visible);
+  };
+
+  const shouldHaveDivider = (length: number, index: number) =>
+    length > 0 && length != index + 1;
+
+  const renderStartAddresses = () => {
+    return startAddresses.map((address, index) => {
+      return (
+        <>
+          <PlacePopover place={address} />
+          {shouldHaveDivider(startAddresses.length, index) && (
+            <VerticalDivider type="vertical" />
+          )}
+        </>
+      );
+    });
+  };
+
+  const renderDestinationAddresses = () => {
+    return destinationAddresses.map((address, index) => {
+      return (
+        <>
+          <PlacePopover place={address} />
+          {shouldHaveDivider(destinationAddresses.length, index) && <Divider />}
+        </>
+      );
+    });
+  };
+
+  const renderMatrixRows = () => {
+    return destinationAddresses.map((da) => {
+      return (
+        <MatrixRow>
+          {startAddresses.map((sa) => {
+            return (
+              <AntCol flex="auto">
+                {da.mainText} {sa.mainText}
+              </AntCol>
+            );
+          })}
+        </MatrixRow>
+      );
     });
   };
 
   return (
-    <AppWrapper>
-      <HeadingWrapper>
-        <Title>distancely</Title>
-      </HeadingWrapper>
-      <BodyWrapper>
-        <LeftSectionWrapper>
-          <DirectionsFormWrapper>
-            <PlacesAutocomplete
-              setValue={(val) => {
-                fromAddressRef.current = val;
-              }}
-              country={userCountry?.countryCode}
-              onChangeHandler={(event) => {
-                fromAddressRef.current = event.target.value;
-              }}
-              onSelectHandler={updateDestinationTravelTimes}
-              onKeyDownHandler={(event) => {
-                if (event.key === "Enter") updateDestinationTravelTimes();
-              }}
-              placeholderText={"From address."}
-              labelText={"Where are you coming from?"}
-            />
-            <PlacesAutocomplete
-              setValue={setToAddress}
-              country={userCountry?.countryCode}
-              value={toAddress}
-              onKeyDownHandler={(event) => {
-                if (event.key === "Enter") addDestinationAddressHandler();
-              }}
-              onChangeHandler={(event) => {
-                setToAddress(event.target.value);
-              }}
-              onSelectHandler={() => {
-                onToAddressSuggestionSelectedRef.current = true;
-              }}
-              placeholderText={"Add a destination address."}
-              labelText={"Where are you going?"}
-              onButtonClickHandler={() => {
-                addDestinationAddressHandler();
-              }}
-              buttonText={"+"}
-              clearOnEnterKeyPress={true}
-              clearOnSelect={true}
-            />
-          </DirectionsFormWrapper>
-          <TableWrapper>
-            <Table
-              columns={distanceColumns}
-              data={destinations}
-              noDataText={"Add some addresses to get travel times 🚗💨"}
-            />
-          </TableWrapper>
-        </LeftSectionWrapper>
-      </BodyWrapper>
-    </AppWrapper>
+    <MainWrapper>
+      <MatrixWrapper>
+        <RowHeader>
+          <AntRow align="middle">
+            <StartLabel flex={LeftSectionWidth}>start ➡</StartLabel>
+            <StartAddresses>{renderStartAddresses()}</StartAddresses>
+            {/* TODO: Float "add start address" button to right */}
+            <AntCol flex={LeftSectionWidth}>
+              <Popover
+                content={
+                  <PlacesAutocomplete2
+                    country={userCountry?.countryCode}
+                    onSelectSuggestion={(selectedPlace) => {
+                      setStartAddresses(startAddresses.concat(selectedPlace));
+                      setStartAddressShowPopover(false);
+                    }}
+                    clearOnSelection={true}
+                  />
+                }
+                trigger="click"
+                visible={showStartAddressPopover}
+                onVisibleChange={handleAddStartAddressVisibleChange}
+                destroyTooltipOnHide={true}
+              >
+                <Button type="primary">add start</Button>
+              </Popover>
+            </AntCol>
+          </AntRow>
+        </RowHeader>
+        <RenameThisOneDay>
+          <ColumnHeader>
+            <DestinationLabelWrapper>
+              <DestinationLabel>destinations</DestinationLabel>
+              <DestinationLabel>⬇</DestinationLabel>
+            </DestinationLabelWrapper>
+            <DestinationAddresses>
+              {renderDestinationAddresses()}
+            </DestinationAddresses>
+            <Row>
+              <Popover
+                content={
+                  <PlacesAutocomplete2
+                    country={userCountry?.countryCode}
+                    onSelectSuggestion={(selectedPlace) => {
+                      setDestinationAddresses(
+                        destinationAddresses.concat(selectedPlace)
+                      );
+                      setDestinationAddressShowPopover(false);
+                    }}
+                    clearOnSelection={true}
+                  />
+                }
+                trigger="click"
+                visible={showDestinationAddressPopover}
+                onVisibleChange={handleAddDestinationAddressVisibleChange}
+                destroyTooltipOnHide={true}
+              >
+                <Button type="primary">add destination</Button>
+              </Popover>
+            </Row>
+          </ColumnHeader>
+          <MatrixBody>
+            <MatrixBodyHeader>Average</MatrixBodyHeader>
+            <MatrixRows>{renderMatrixRows()}</MatrixRows>
+          </MatrixBody>
+        </RenameThisOneDay>
+      </MatrixWrapper>
+      <MapWrapper></MapWrapper>
+    </MainWrapper>
   );
 };
 
-export default Main;
+export default Main2;
