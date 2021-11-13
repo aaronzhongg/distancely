@@ -18,6 +18,7 @@ import { Place } from "../../types/place";
 import React from "react";
 import { RefSelectProps } from "antd/lib/select";
 import { Distance } from "../../types/distance";
+import { constants } from "fs";
 
 const LeftSectionWidth = "150px";
 
@@ -152,12 +153,12 @@ async function GetUserCountry(): Promise<Country | null> {
 }
 
 // todo: update this?
-// type Distance = {
-//   start: Place,
-//   destination: Place,
-//   travelTimeSeconds: number,
-//   distanceM: number
-// }
+type DistanceDisplay = {
+  start: Place | null;
+  destination: Place | null;
+  travelTimeSeconds: number;
+  distanceM: number;
+};
 
 const Main2 = () => {
   const [userCountry, setUserCountry] = useState<Country | null>(null);
@@ -173,7 +174,9 @@ const Main2 = () => {
   const [destinationAddresses, setDestinationAddresses] = useState<Place[]>([]);
 
   // Distance
-  const [distances, setDistances] = useState<Distance[][]>([]); // [start.len][dest.length]
+  const hasStartAddressAdded = useRef(false);
+  const hasDestinationAddressAdded = useRef(false);
+  const [distances, setDistances] = useState<DistanceDisplay[][]>([]); // [start.len][dest.length]
 
   useEffect(() => {
     const fetchUserCountry = async () => {
@@ -192,15 +195,32 @@ const Main2 = () => {
     setStartAddressShowPopover(false);
 
     // Adding new start address adds an item into each inner list
-    var newDistance = {
-      destination: "test",
-    } as Distance;
+    var newStartTemplate = {
+      start: selectedPlace,
+      destination: null,
+      travelTimeSeconds: 0,
+      distanceM: 0,
+    } as DistanceDisplay;
 
     if (distances.length == 0) {
-      setDistances([[newDistance]]);
+      setDistances([[newStartTemplate]]);
     } else {
-      setDistances(distances.map((d) => d.concat(newDistance)));
+      setDistances(
+        distances.map((d) => {
+          var newStart = { ...newStartTemplate } as DistanceDisplay;
+          newStart.destination = d[0].destination;
+
+          if (!hasStartAddressAdded.current) {
+            return [newStart];
+          }
+
+          // newDistance.destination = d[0].destination;
+          return d.concat(newStart);
+        })
+      );
     }
+
+    hasStartAddressAdded.current = true;
   };
 
   const handleAddDestinationAddressVisibleChange = (visible: boolean) => {
@@ -208,11 +228,43 @@ const Main2 = () => {
   };
 
   const addDestinationAddress = (selectedPlace: Place) => {
+    console.log("addDestinationAddress");
     setDestinationAddresses(destinationAddresses.concat(selectedPlace));
     setDestinationAddressShowPopover(false);
 
-    // todo: add start addresses to new row
-    setDistances([...distances, []]);
+    const newDestinationTemplate = {
+      start: null,
+      destination: selectedPlace,
+      travelTimeSeconds: 0,
+      distanceM: 0,
+    } as DistanceDisplay;
+
+    if (!hasStartAddressAdded.current && distances.length == 0) {
+      setDistances([[newDestinationTemplate]]);
+    } else if (
+      hasStartAddressAdded.current &&
+      !hasDestinationAddressAdded.current &&
+      distances.length == 1
+    ) {
+      setDistances([
+        distances[0].map((d) => {
+          var newDestination = { ...newDestinationTemplate } as DistanceDisplay;
+          newDestination.start = d.start;
+          return newDestination;
+        }),
+      ]);
+    } else {
+      setDistances([
+        ...distances,
+        distances[0].map((d) => {
+          var newDestination = { ...newDestinationTemplate } as DistanceDisplay;
+          newDestination.start = d.start;
+          return newDestination;
+        }),
+      ]);
+    }
+
+    hasDestinationAddressAdded.current = true;
   };
 
   useEffect(() => {
