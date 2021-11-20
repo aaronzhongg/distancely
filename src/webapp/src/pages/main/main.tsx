@@ -19,6 +19,7 @@ import React from "react";
 import { RefSelectProps } from "antd/lib/select";
 import { Distance } from "../../types/distance";
 import { constants } from "fs";
+import GetDistanceTo from "../../services/distance";
 
 const LeftSectionWidth = "150px";
 
@@ -153,12 +154,18 @@ async function GetUserCountry(): Promise<Country | null> {
 }
 
 // todo: update this?
-type DistanceDisplay = {
-  start: Place | null;
-  destination: Place | null;
-  travelTimeSeconds: number;
-  distanceM: number;
-};
+// type DistanceDisplay = {
+//   // start: Place | null;
+//   // destination: Place | null;
+//   travelTimeSeconds: number;
+//   distanceM: number;
+// };
+
+async function asyncForEach(array: any, callback: any) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
 
 const Main2 = () => {
   const [userCountry, setUserCountry] = useState<Country | null>(null);
@@ -174,9 +181,9 @@ const Main2 = () => {
   const [destinationAddresses, setDestinationAddresses] = useState<Place[]>([]);
 
   // Distance
-  const hasStartAddressAdded = useRef(false);
-  const hasDestinationAddressAdded = useRef(false);
-  const [distances, setDistances] = useState<DistanceDisplay[][]>([]); // [start.len][dest.length]
+  // const hasStartAddressAdded = useRef(false);
+  // const hasDestinationAddressAdded = useRef(false);
+  const [distances, setDistances] = useState<Distance[][]>([]); // [start.len][dest.length]
 
   useEffect(() => {
     const fetchUserCountry = async () => {
@@ -189,38 +196,9 @@ const Main2 = () => {
     setStartAddressShowPopover(visible);
   };
 
-  // todo: remove startAddresses and destionationAddresses, just use 2d array with new type
   const addStartAddress = (selectedPlace: Place) => {
     setStartAddresses(startAddresses.concat(selectedPlace));
     setStartAddressShowPopover(false);
-
-    // Adding new start address adds an item into each inner list
-    var newStartTemplate = {
-      start: selectedPlace,
-      destination: null,
-      travelTimeSeconds: 0,
-      distanceM: 0,
-    } as DistanceDisplay;
-
-    if (distances.length == 0) {
-      setDistances([[newStartTemplate]]);
-    } else {
-      setDistances(
-        distances.map((d) => {
-          var newStart = { ...newStartTemplate } as DistanceDisplay;
-          newStart.destination = d[0].destination;
-
-          if (!hasStartAddressAdded.current) {
-            return [newStart];
-          }
-
-          // newDistance.destination = d[0].destination;
-          return d.concat(newStart);
-        })
-      );
-    }
-
-    hasStartAddressAdded.current = true;
   };
 
   const handleAddDestinationAddressVisibleChange = (visible: boolean) => {
@@ -231,46 +209,36 @@ const Main2 = () => {
     console.log("addDestinationAddress");
     setDestinationAddresses(destinationAddresses.concat(selectedPlace));
     setDestinationAddressShowPopover(false);
-
-    const newDestinationTemplate = {
-      start: null,
-      destination: selectedPlace,
-      travelTimeSeconds: 0,
-      distanceM: 0,
-    } as DistanceDisplay;
-
-    if (!hasStartAddressAdded.current && distances.length == 0) {
-      setDistances([[newDestinationTemplate]]);
-    } else if (
-      hasStartAddressAdded.current &&
-      !hasDestinationAddressAdded.current &&
-      distances.length == 1
-    ) {
-      setDistances([
-        distances[0].map((d) => {
-          var newDestination = { ...newDestinationTemplate } as DistanceDisplay;
-          newDestination.start = d.start;
-          return newDestination;
-        }),
-      ]);
-    } else {
-      setDistances([
-        ...distances,
-        distances[0].map((d) => {
-          var newDestination = { ...newDestinationTemplate } as DistanceDisplay;
-          newDestination.start = d.start;
-          return newDestination;
-        }),
-      ]);
-    }
-
-    hasDestinationAddressAdded.current = true;
   };
 
   useEffect(() => {
-    console.log("here");
-    console.log(distances);
-  }, [distances]);
+    const getDistances = async () => {
+      var tempDistances = [] as Distance[][];
+      await asyncForEach(destinationAddresses, async (dest: Place) => {
+        var row = [] as Distance[];
+        await asyncForEach(startAddresses, async (start: Place) => {
+          var response = await GetDistanceTo(
+            `${start.mainText} ${start.secondaryText}`,
+            `${dest.mainText} ${dest.secondaryText}`
+          );
+
+          var distance = {
+            destination: dest.mainText,
+            travelTime: response.travelTimeSeconds,
+          } as Distance;
+
+          row.push(distance);
+        });
+        tempDistances.push(row);
+      });
+
+      // console.log("fetched distances");
+      // console.log(tempDistances);
+      setDistances(tempDistances);
+    };
+
+    getDistances();
+  }, [startAddresses, destinationAddresses]);
 
   const shouldHaveDivider = (length: number, index: number) =>
     length > 0 && length != index + 1;
@@ -300,19 +268,16 @@ const Main2 = () => {
   };
 
   const renderMatrixRows = () => {
-    return destinationAddresses.map((da) => {
-      return (
-        <MatrixRow>
-          {startAddresses.map((sa) => {
-            return (
-              <AntCol flex="auto">
-                {da.mainText} {sa.mainText}
-              </AntCol>
-            );
-          })}
-        </MatrixRow>
-      );
-    });
+    console.log("renderMatrixRows");
+    console.log(distances);
+
+    return distances.map((rows) => (
+      <MatrixRow>
+        {rows.map((sa) => (
+          <AntCol flex="auto">{sa.destination}</AntCol>
+        ))}
+      </MatrixRow>
+    ));
   };
 
   return (

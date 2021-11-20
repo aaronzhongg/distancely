@@ -2,14 +2,14 @@ import axios from "axios";
 
 export default async function GetDistanceTo(
   fromAddress: string,
-  toAddress: string
+  destinationAddress: string
 ) {
   // todo: move to another class
   console.log("GetDistanceTo");
   var response = await axios.get(
     `https://localhost:2442/DistanceCalculator?fromAddress=${encodeURIComponent(
       fromAddress
-    )}&toAddress=${encodeURIComponent(toAddress)}`
+    )}&destinationAddress=${encodeURIComponent(destinationAddress)}`
   );
   console.log(response);
 
