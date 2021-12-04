@@ -154,12 +154,13 @@ async function GetUserCountry(): Promise<Country | null> {
 }
 
 // todo: update this?
-// type DistanceDisplay = {
-//   // start: Place | null;
-//   // destination: Place | null;
-//   travelTimeSeconds: number;
-//   distanceM: number;
-// };
+type DistanceDisplay = {
+  start: Place | null;
+  destination: Place | null;
+  travelTimeSeconds: number;
+  distanceMeters: number;
+  isLoading: boolean;
+};
 
 async function asyncForEach(array: any, callback: any) {
   for (let index = 0; index < array.length; index++) {
@@ -181,9 +182,9 @@ const Main2 = () => {
   const [destinationAddresses, setDestinationAddresses] = useState<Place[]>([]);
 
   // Distance
-  // const hasStartAddressAdded = useRef(false);
-  // const hasDestinationAddressAdded = useRef(false);
-  const [distances, setDistances] = useState<Distance[][]>([]); // [start.len][dest.length]
+  const hasStartAddressAdded = useRef(false);
+  const hasDestinationAddressAdded = useRef(false);
+  const [distances, setDistances] = useState<DistanceDisplay[][]>([]); // [start.len][dest.length]
 
   useEffect(() => {
     const fetchUserCountry = async () => {
@@ -199,6 +200,34 @@ const Main2 = () => {
   const addStartAddress = (selectedPlace: Place) => {
     setStartAddresses(startAddresses.concat(selectedPlace));
     setStartAddressShowPopover(false);
+
+    var newStartTemplate = {
+      start: selectedPlace,
+      destination: null,
+      travelTimeSeconds: 0,
+      distanceMeters: 0,
+      isLoading: true,
+    } as DistanceDisplay;
+
+    if (distances.length == 0) {
+      setDistances([[newStartTemplate]]);
+    } else {
+      setDistances(
+        distances.map((d) => {
+          var newStart = { ...newStartTemplate } as DistanceDisplay;
+          newStart.destination = d[0].destination;
+
+          if (!hasStartAddressAdded.current) {
+            return [newStart];
+          }
+
+          // newDistance.destination = d[0].destination;
+          return d.concat(newStart);
+        })
+      );
+    }
+
+    hasStartAddressAdded.current = true;
   };
 
   const handleAddDestinationAddressVisibleChange = (visible: boolean) => {
@@ -209,36 +238,77 @@ const Main2 = () => {
     console.log("addDestinationAddress");
     setDestinationAddresses(destinationAddresses.concat(selectedPlace));
     setDestinationAddressShowPopover(false);
+
+    const newDestinationTemplate = {
+      start: null,
+      destination: selectedPlace,
+      travelTimeSeconds: 0,
+      distanceMeters: 0,
+      isLoading: true,
+    } as DistanceDisplay;
+
+    if (!hasStartAddressAdded.current && distances.length == 0) {
+      setDistances([[newDestinationTemplate]]);
+    } else if (
+      hasStartAddressAdded.current &&
+      !hasDestinationAddressAdded.current &&
+      distances.length == 1
+    ) {
+      setDistances([
+        distances[0].map((d) => {
+          var newDestination = { ...newDestinationTemplate } as DistanceDisplay;
+          newDestination.start = d.start;
+          return newDestination;
+        }),
+      ]);
+    } else {
+      setDistances([
+        ...distances,
+        distances[0].map((d) => {
+          var newDestination = { ...newDestinationTemplate } as DistanceDisplay;
+          newDestination.start = d.start;
+          return newDestination;
+        }),
+      ]);
+    }
+
+    hasDestinationAddressAdded.current = true;
   };
 
   useEffect(() => {
     const getDistances = async () => {
-      var tempDistances = [] as Distance[][];
-      await asyncForEach(destinationAddresses, async (dest: Place) => {
-        var row = [] as Distance[];
-        await asyncForEach(startAddresses, async (start: Place) => {
+      var tempDistances = [...distances];
+      var hasUpdate = false;
+      await asyncForEach(tempDistances, async (rows: DistanceDisplay[]) => {
+        await asyncForEach(rows, async (distance: DistanceDisplay) => {
+          console.log(distance);
+
+          var tempDistance = [];
+
+          if (!distance.isLoading || !distance.start || !distance.destination)
+            return;
+
           var response = await GetDistanceTo(
-            `${start.mainText} ${start.secondaryText}`,
-            `${dest.mainText} ${dest.secondaryText}`
+            `${distance.start.mainText} ${distance.start.secondaryText}`,
+            `${distance.destination.mainText} ${distance.destination.secondaryText}`
           );
 
-          var distance = {
-            destination: dest.mainText,
-            travelTime: response.travelTimeSeconds,
-          } as Distance;
+          console.log(response);
 
-          row.push(distance);
+          distance.travelTimeSeconds = response.travelTimeSeconds;
+          distance.distanceMeters = response.distanceMeters;
+          distance.isLoading = false;
+
+          hasUpdate = true;
         });
-        tempDistances.push(row);
       });
 
-      // console.log("fetched distances");
-      // console.log(tempDistances);
-      setDistances(tempDistances);
+      console.log(tempDistances);
+      if (hasUpdate) setDistances(tempDistances);
     };
 
     getDistances();
-  }, [startAddresses, destinationAddresses]);
+  }, [distances]);
 
   const shouldHaveDivider = (length: number, index: number) =>
     length > 0 && length != index + 1;
@@ -269,12 +339,14 @@ const Main2 = () => {
 
   const renderMatrixRows = () => {
     console.log("renderMatrixRows");
-    console.log(distances);
+    // console.log(distances);
 
     return distances.map((rows) => (
       <MatrixRow>
         {rows.map((sa) => (
-          <AntCol flex="auto">{sa.destination}</AntCol>
+          <AntCol flex="auto">
+            {sa.isLoading ? "loading" : sa.travelTimeSeconds}
+          </AntCol> // todo: convert travel time into readable format i.e. 1hr 2min, 48min etc.
         ))}
       </MatrixRow>
     ));
