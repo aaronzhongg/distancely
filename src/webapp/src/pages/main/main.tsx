@@ -1,25 +1,13 @@
-import { createRef, useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import {
-  Tag,
-  Space,
-  Row,
-  Col,
-  Button,
-  Popover,
-  AutoComplete,
-  Divider,
-} from "antd";
+import { Row, Col, Button, Popover, Divider } from "antd";
 import "antd/dist/antd.css";
 import PlacesAutocomplete2 from "../../components/places-autocomplete";
 import PlacePopover from "../../components/place-popover";
 import axios from "axios";
 import { Place } from "../../types/place";
-import React from "react";
-import { RefSelectProps } from "antd/lib/select";
-import { Distance } from "../../types/distance";
-import { constants } from "fs";
 import GetDistanceTo from "../../services/distance";
+import { start } from "repl";
 
 const LeftSectionWidth = "150px";
 
@@ -230,6 +218,32 @@ const Main2 = () => {
     hasStartAddressAdded.current = true;
   };
 
+  const removeStartAddress = (
+    selectedPlace: Place,
+    startAddressCol: number
+  ) => {
+    const tempStartAddress = [...startAddresses];
+    tempStartAddress.splice(startAddressCol, 1);
+    setStartAddresses(tempStartAddress);
+
+    var tempDistances = [...distances];
+
+    if (
+      tempDistances.length == 1 &&
+      tempDistances[0].length == 1 &&
+      !hasDestinationAddressAdded.current
+    )
+      tempDistances.splice(startAddressCol, 1);
+    else tempDistances.forEach((row) => row.splice(startAddressCol, 1));
+    setDistances(tempDistances);
+
+    hasStartAddressAdded.current =
+      (!hasDestinationAddressAdded.current && tempDistances.length > 0) ||
+      (hasDestinationAddressAdded.current && tempDistances[0].length > 0);
+
+    console.log(hasStartAddressAdded.current);
+  };
+
   const handleAddDestinationAddressVisibleChange = (visible: boolean) => {
     setDestinationAddressShowPopover(visible);
   };
@@ -275,6 +289,27 @@ const Main2 = () => {
     hasDestinationAddressAdded.current = true;
   };
 
+  const removeDestinationAddress = (
+    selectedPlace: Place,
+    destinationAddressRow: number
+  ) => {
+    const tempDestinationAddresses = [...destinationAddresses];
+    tempDestinationAddresses.splice(destinationAddressRow, 1);
+    setDestinationAddresses(tempDestinationAddresses);
+
+    var tempDistances = [...distances];
+
+    if (tempDistances.length == 1 && hasStartAddressAdded.current)
+      tempDistances[0].forEach((col) => (col.destination = null));
+    else tempDistances.splice(destinationAddressRow, 1);
+
+    setDistances(tempDistances);
+
+    hasDestinationAddressAdded.current =
+      (!hasStartAddressAdded.current && tempDistances.length > 0) ||
+      (hasStartAddressAdded.current && tempDistances.length > 1);
+  };
+
   useEffect(() => {
     const getDistances = async () => {
       var tempDistances = [...distances];
@@ -282,8 +317,6 @@ const Main2 = () => {
       await asyncForEach(tempDistances, async (rows: DistanceDisplay[]) => {
         await asyncForEach(rows, async (distance: DistanceDisplay) => {
           console.log(distance);
-
-          var tempDistance = [];
 
           if (!distance.isLoading || !distance.start || !distance.destination)
             return;
@@ -317,7 +350,12 @@ const Main2 = () => {
     return startAddresses.map((address, index) => {
       return (
         <>
-          <PlacePopover place={address} />
+          <PlacePopover
+            place={address}
+            deleteButtonOnClickHandler={() =>
+              removeStartAddress(address, index)
+            }
+          />
           {shouldHaveDivider(startAddresses.length, index) && (
             <VerticalDivider type="vertical" />
           )}
@@ -330,7 +368,12 @@ const Main2 = () => {
     return destinationAddresses.map((address, index) => {
       return (
         <>
-          <PlacePopover place={address} />
+          <PlacePopover
+            place={address}
+            deleteButtonOnClickHandler={() =>
+              removeDestinationAddress(address, index)
+            }
+          />
           {shouldHaveDivider(destinationAddresses.length, index) && <Divider />}
         </>
       );

@@ -1,6 +1,8 @@
-import { Col, Popover } from "antd";
+import { Button, Col, Popover } from "antd";
 import styled from "styled-components";
+import { DeleteOutlined } from "@ant-design/icons";
 import { Place } from "../../types/place";
+import { MouseEventHandler, useState } from "react";
 
 const Wrapper = styled.div`
   display: flex;
@@ -21,11 +23,21 @@ const PlaceDetailsSubheading = styled.div`
   font-size: 10px;
 `;
 
+const AbsoluteButton = styled(Button)`
+  position: absolute;
+  height: inherit;
+`;
+
 export interface PlacePopoverProps {
   place: Place;
+  deleteButtonOnClickHandler: MouseEventHandler<HTMLElement>;
 }
 
-const PlacePopover = ({ place }: PlacePopoverProps) => {
+const PlacePopover = ({
+  place,
+  deleteButtonOnClickHandler,
+}: PlacePopoverProps) => {
+  const [showDeleteButton, setShowDeleteButton] = useState(false);
   return (
     <Wrapper>
       <Popover
@@ -38,7 +50,19 @@ const PlacePopover = ({ place }: PlacePopoverProps) => {
           </PlaceDetails>
         }
       >
-        {place.mainText}
+        <div
+          onMouseEnter={() => setShowDeleteButton(true)}
+          onMouseLeave={() => setShowDeleteButton(false)}
+        >
+          {place.mainText}
+          {showDeleteButton && (
+            <AbsoluteButton
+              icon={<DeleteOutlined />}
+              onClick={deleteButtonOnClickHandler}
+              type={"text"}
+            />
+          )}
+        </div>
       </Popover>
     </Wrapper>
   );
