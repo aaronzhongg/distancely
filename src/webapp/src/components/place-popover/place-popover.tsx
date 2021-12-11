@@ -52,7 +52,14 @@ const PlacePopover = ({
       >
         <div
           onMouseEnter={() => setShowDeleteButton(true)}
-          onMouseLeave={() => setShowDeleteButton(false)}
+          onMouseLeave={() =>
+            setTimeout(
+              function () {
+                setShowDeleteButton(false);
+              }.bind(this),
+              400
+            )
+          }
         >
           {place.mainText}
           {showDeleteButton && (
