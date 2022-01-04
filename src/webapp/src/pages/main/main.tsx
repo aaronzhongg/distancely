@@ -1,12 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { Row, Col, Button, Popover, Divider } from "antd";
+import { Row, Col, Button, Popover, Divider, Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 import "antd/dist/antd.css";
 import PlacesAutocomplete2 from "../../components/places-autocomplete";
 import PlacePopover from "../../components/place-popover";
 import axios from "axios";
 import { Place } from "../../types/place";
 import GetDistanceTo from "../../services/distance";
+
+const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
+
+const UNKNOWN = -1;
 
 const LeftSectionWidth = "150px";
 
@@ -122,6 +127,11 @@ const MatrixRow = styled.div`
   flex-direction: row;
 `;
 
+const MatrixMain = styled(AntRow)`
+  font-weight: bold;
+  font-size: 20px;
+`;
+
 type Country = {
   country: string;
   countryCode: string;
@@ -141,6 +151,26 @@ async function GetUserCountry(): Promise<Country | null> {
   console.log("Cannot retrieve country");
   return null;
 }
+
+const FormatTime = (timeInSeconds: number) => {
+  if (!timeInSeconds) return <Spin indicator={antIcon} />;
+  if (timeInSeconds === UNKNOWN) return "?";
+
+  if (timeInSeconds < 60) return `${Math.round(timeInSeconds)} seconds`;
+
+  if (timeInSeconds < 3600) return `${Math.round(timeInSeconds / 60)} minutes`;
+
+  return `${Math.round(timeInSeconds / 60 / 60)} hours`;
+};
+
+const FormatDistance = (distanceInMeters: number) => {
+  if (!distanceInMeters) return <Spin indicator={antIcon} />;
+  if (distanceInMeters === UNKNOWN) return "?";
+
+  if (distanceInMeters < 100) return `${Math.round(distanceInMeters)} meters`;
+
+  return `${Math.round((distanceInMeters / 1000) * 10) / 10}km`;
+};
 
 // todo: update this?
 type DistanceDisplay = {
@@ -389,7 +419,14 @@ const Main2 = () => {
       <MatrixRow>
         {rows.map((sa) => (
           <AntCol flex="auto">
-            {sa.isLoading ? "loading" : sa.travelTimeSeconds}
+            {sa.isLoading ? (
+              <Spin indicator={antIcon} />
+            ) : (
+              <>
+                <MatrixMain>{FormatTime(sa.travelTimeSeconds)}</MatrixMain>
+                <AntRow>{FormatDistance(sa.distanceMeters)}</AntRow>
+              </>
+            )}
           </AntCol> // todo: convert travel time into readable format i.e. 1hr 2min, 48min etc.
         ))}
       </MatrixRow>
