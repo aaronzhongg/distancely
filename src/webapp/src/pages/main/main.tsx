@@ -7,7 +7,6 @@ import PlacePopover from "../../components/place-popover";
 import axios from "axios";
 import { Place } from "../../types/place";
 import GetDistanceTo from "../../services/distance";
-import { start } from "repl";
 
 const LeftSectionWidth = "150px";
 
@@ -129,7 +128,9 @@ type Country = {
 };
 
 async function GetUserCountry(): Promise<Country | null> {
-  var result = await axios("https://extreme-ip-lookup.com/json/");
+  var result = await axios(
+    "https://extreme-ip-lookup.com/json/?key=corcRJufc9oDgt41iURB" // todo: move api key to .env
+  );
 
   if (result.status === 200)
     return {
